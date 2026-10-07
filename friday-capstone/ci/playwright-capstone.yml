@@ -1,0 +1,69 @@
+# CI workflow for the MEDIC-108 capstone suite.
+#
+# Ready to use, not active: GitHub only runs workflows from .github/workflows/.
+# To enable it, copy this file to .github/workflows/playwright-capstone.yml and add
+# three repository secrets: CAPSTONE_PATIENT_EMAIL, CAPSTONE_API_PATIENT_EMAIL and
+# CAPSTONE_PATIENT_PASSWORD (see README.md, "CI").
+
+name: MEDIC-108 capstone suite
+
+on:
+  # Only when this capstone changes, so other trainees' pushes don't trigger it.
+  pull_request:
+    paths:
+      - 'trainees/development/submissions/friday-capstone/adriana-chipana/**'
+  # And on demand, from the Actions tab.
+  workflow_dispatch:
+
+# One run at a time: the tests edit real profiles in a shared environment.
+concurrency:
+  group: medic-108-capstone
+  cancel-in-progress: false
+
+env:
+  SUITE_DIR: trainees/development/submissions/friday-capstone/adriana-chipana
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run the suite
+        env:
+          CI: 'true'
+          PATIENT_EMAIL: ${{ secrets.CAPSTONE_PATIENT_EMAIL }}
+          API_PATIENT_EMAIL: ${{ secrets.CAPSTONE_API_PATIENT_EMAIL }}
+          PATIENT_PASSWORD: ${{ secrets.CAPSTONE_PATIENT_PASSWORD }}
+        run: npx playwright test -c "$SUITE_DIR/playwright.config.ts"
+
+      # The HTML report, kept for every run. In CI the config turns traces off,
+      # so the report never contains the typed password.
+      - name: Upload HTML report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: ${{ env.SUITE_DIR }}/playwright-report
+          retention-days: 7
+
+      # Screenshots and videos of failed tests only.
+      - name: Upload failure artifacts
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: failure-artifacts
+          path: ${{ env.SUITE_DIR }}/test-results
+          retention-days: 7

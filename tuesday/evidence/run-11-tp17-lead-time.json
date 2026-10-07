@@ -1,0 +1,47 @@
+{
+ "captured": "2026-09-29T20:27:50.082Z",
+ "clinicLocalNow": "2026-09-29 15:27 (UTC−5)",
+ "doctor": "D2 Dr. Priya Patel (Tue 09:00–16:00, 30 min)",
+ "slotsOffered": [
+  "09:00",
+  "09:30",
+  "10:00",
+  "10:30",
+  "11:00",
+  "11:30",
+  "12:00",
+  "12:30",
+  "13:00",
+  "13:30",
+  "14:00",
+  "14:30",
+  "15:00",
+  "15:30",
+  "16:00"
+ ],
+ "nextSlot": "15:30",
+ "minutesAhead": 3,
+ "postWithinLeadTime": {
+  "request": {
+   "method": "POST",
+   "path": "/api/appointments",
+   "body": {
+    "doctorId": "6aa85e2fb0083185ed54c88b",
+    "date": "2026-09-29",
+    "timeSlot": "15:30",
+    "specialty": "Cardiology",
+    "reason": "QA dry run TP-17 lead-time (will cancel)"
+   }
+  },
+  "status": 201,
+  "body": {
+   "_id": "6abc1f47198542bcdcf95e88",
+   "date": "2026-09-29T00:00:00.000Z",
+   "timeSlot": "15:30",
+   "status": "scheduled"
+  }
+ },
+ "cleanup": {
+  "status": 200
+ }
+}

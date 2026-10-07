@@ -1,0 +1,50 @@
+# Test Plan — MEDIC-108 Patient Profile Management
+
+Author: Adriana Chipana · Track: Development · Day: Friday (capstone)
+
+- **Feature / Area:** Patient profile — the `/profile` screen and `PUT /api/profile` (GitHub issue MEDIC-108).
+- **Objective:** Decide whether a signed-in patient can keep their name and phone accurate, whether identity fields are protected, and whether a change shows everywhere it should. Output: pass/fail per scenario with evidence, and a release recommendation (see `demo-notes.md`).
+- **In Scope:**
+  - Viewing and editing name and phone in the UI.
+  - Read-only email.
+  - `PUT /api/profile` and `GET /api/profile` for the signed-in patient: success, auth, field allow-list, validation.
+  - Where the changed name appears for the patient (navbar, dashboard).
+  - Rendering of special characters.
+- **Out of Scope:**
+  - Avatar upload — disabled in the UI, "not yet implemented"; only the `avatarUrl` field is checked at API level.
+  - Changing the email through another process.
+  - Doctor and admin profiles.
+  - The audit log — nothing to observe (see R-05).
+  - Performance.
+- **Assumptions:**
+  - The reference business rules for MEDIC-108 (`trainees/product/belen/friday/business-rules-catalogue-medic108.md`) are the expected behaviour: name required, 2–50 characters; valid phone; email read-only; change visible everywhere; audit entry.
+  - The reference AC's field and copy names ("displayName", "Save Profile", "Profile updated successfully") describe intent, not literal identifiers. The app uses `name`, "Save changes" and "Profile updated".
+- **Dependencies:**
+  - The shared deployment is up, with seeded defects on (facilitator, Thursday).
+  - Two throwaway patient accounts from Tuesday's seed: one for the UI test and one for the API test, so they never edit the same profile.
+- **Entry Criteria:**
+  - Both test accounts can log in.
+  - Their profiles are in the seed's original state.
+  - The tests snapshot the profile first, so a drifted value is restored, not lost.
+- **Exit Criteria:**
+  - Every scenario in `scenarios.md` executed or explicitly marked not testable.
+  - The UI and API tests green 3 runs in a row.
+  - Each failure written up (the bug report, or a scenario note) with evidence.
+  - Profiles restored.
+- **Tools Needed:** Playwright 1.63 (Chromium), DevTools (Network, `page.route` to force a save error), Node.js 20.
+- **Resources Needed:** one tester (solo capstone), ~4 h.
+- **Environments:** https://medapp-nerdery.vercel.app; browser zone America/La_Paz, as in the repo config.
+- **Risks:** see `risk-register.md` — R-01 stale name (20), R-02 name validation (15), R-03 phone validation (15), R-05 no audit (15), R-06 script in name (10), R-04 identity fields (5).
+- **Test Data:**
+  - Throwaway patients P3 (UI test) and P4 (API test), plus P2 for the bug reproduction.
+  - All are seeded in `../../tuesday/adriana-chipana/seed/`. Credentials are read from the environment.
+  - Each test restores the profile it changed.
+- **Coverage Approach:**
+  - **Risk-based.** The highest-value passing behaviours are automated: update + persist through the UI (reference AC SC-01), and auth plus identity-field protection through the API (reference AC SC-03, SC-04).
+  - **Failing rules** (validation, propagation, audit) are checked manually with evidence and written up instead of automated green.
+  - **`data-testid` audit:** the hooks on the profile screen were audited in place of a Design state map, which doesn't exist for this feature (mentor, 2026-10-02).
+- **Known Limitations:**
+  - No reference state map.
+  - The doctor's view of a renamed patient, and real-time propagation across two open sessions, were reasoned about but not automated.
+  - Chromium only.
+  - The empty-phone and trimmed-length questions are open in the reference rules.

@@ -1,0 +1,17 @@
+P1 qa.adriana.tue.2609291300.p1@test.com registered (201) and logged in
+P2 qa.adriana.tue.2609291300.p2@test.com registered (201) and logged in
+P3 qa.adriana.tue.2609291300.p3@test.com registered (201) and logged in
+P4 qa.adriana.tue.2609291300.p4@test.com registered (201) and logged in
+P5 qa.adriana.tue.2609291300.p5@test.com registered (201) and logged in
+A01 P1 Dr. Michael Thompson 2026-10-20 07:00 -> scheduled [POST 201]
+A02 P1 Dr. Priya Patel 2026-10-22 10:00 -> scheduled [POST 201]
+A03 P2 Dr. Michael Thompson 2026-10-22 13:30 -> scheduled [POST 201]
+A04 P2 Dr. Leila Okonkwo 2026-10-27 09:30 -> cancelled [POST 201, DELETE 200]
+A05 P3 Dr. Priya Patel 2026-11-02 11:00 -> scheduled [POST 201, PUT 200 2026-10-26 -> 2026-11-02]
+A06 P3 Dr. Michael Thompson 2026-10-27 09:30 -> cancelled [POST 201, DELETE 200]
+A07 P4 Dr. Michael Thompson 2026-10-27 09:30 -> scheduled [POST 201]
+A08 P4 Dr. Leila Okonkwo 2026-11-03 09:00 -> scheduled [POST 201]
+A09 P5 Dr. Priya Patel 2026-11-02 12:00 -> cancelled [POST 201, DELETE 200]
+A10 P5 Dr. Leila Okonkwo 2026-12-01 08:00 -> scheduled [POST 201]
+
+Wrote seed-output.json (5 patients, 10 appointments)

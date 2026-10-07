@@ -1,0 +1,15 @@
+{
+  "captured": "2026-09-29T12:57:55Z",
+  "role": "patient (own account)",
+  "trigger": "Appointment detail -> Cancel appointment -> Yes, cancel",
+  "note": "Clicking 'Keep it' first sent no request (checked in the network log before confirming).",
+  "request": {"method": "DELETE", "url": "/api/appointments/6abbb57f4db95823cc3f3311", "body": null},
+  "response": {
+    "status": 200,
+    "body": {"success":true,"data":{"_id":"6abbb57f4db95823cc3f3311","patientId":"6aa8611db0083185ed54c8b4","doctorId":"6aa85e2fb0083185ed54c887","date":"2026-10-14T00:00:00.000Z","timeSlot":"10:00","specialty":"General Practice","reason":"QA Tuesday flow capture - edited (will cancel)","status":"cancelled","notes":"","createdAt":"2026-09-29T12:56:31.925Z","updatedAt":"2026-09-29T12:57:55.258Z","__v":0}}
+  },
+  "follow_up": {
+    "repeat_DELETE_on_cancelled": {"status": 200, "meaning": "cancel is idempotent; no error for an already-cancelled appointment"},
+    "toast_after_cancel": "none shown (toast-container empty)"
+  }
+}

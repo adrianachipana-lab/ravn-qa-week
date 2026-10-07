@@ -1,0 +1,36 @@
+{
+ "captured": "2026-09-29T14:51:50.239Z",
+ "actor": "P1 (seeded)",
+ "booked": {
+  "doctor": "Dr. Michael Thompson",
+  "date": "2026-10-21",
+  "timeSlot": "07:00"
+ },
+ "api": {
+  "_id": "6abbd073dfeab26546419bf4",
+  "date": "2026-10-21T00:00:00.000Z",
+  "timeSlot": "07:00",
+  "status": "scheduled"
+ },
+ "list": {
+  "date": "Oct 20, 2026",
+  "time": "02:00 AM",
+  "status": "Scheduled"
+ },
+ "dashboard": "Dr. Michael ThompsonGeneral Practice • Oct 21, 2026 at 07:00Scheduled",
+ "toastAfterBooking": "(empty)",
+ "detail": {
+  "server_html": {
+   "date": "Oct 21, 2026",
+   "time": "07:00 AM"
+  },
+  "after_hydration_in_browser": {
+   "date": "Oct 20, 2026",
+   "time": "02:00 AM",
+   "browser_timezone": "America/Lima",
+   "screenshot": "run-04-tp06-detail-after-hydration.png"
+  }
+ },
+ "console_errors_on_detail": "React #425 (x8), #418, #423 — hydration text mismatch",
+ "interpretation": "API, server-rendered detail HTML and dashboard all show 2026-10-21 07:00. The list and the detail page after hydration show Oct 20, 02:00 AM. The stored data is right; the date is re-formatted in the browser with a timezone conversion, and React reports the server/client text mismatch."
+}

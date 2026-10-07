@@ -1,0 +1,51 @@
+{
+ "captured": "2026-10-01T14:25:52.080Z",
+ "environment": "https://medapp-nerdery.vercel.app",
+ "doctor": "Dr. Sarah Mitchell (General Practice), id 6aa85e2fb0083185ed54c887",
+ "slot": "2026-11-24 15:30",
+ "actors": {
+  "patientA": "seeded test patient P1",
+  "patientB": "seeded test patient P5"
+ },
+ "steps": {
+  "1_slots_before": {
+   "time": "15:30",
+   "available": true
+  },
+  "2_patientA_books": {
+   "status": 201,
+   "body": {
+    "success": true,
+    "data": {
+     "_id": "6abe6d70d7ea35df06f9bd98",
+     "doctorId": "6aa85e2fb0083185ed54c887",
+     "date": "2026-11-24T00:00:00.000Z",
+     "timeSlot": "15:30",
+     "status": "scheduled"
+    }
+   }
+  },
+  "3_slots_after_A": {
+   "time": "15:30",
+   "available": true
+  },
+  "4_patientB_books_same_slot": {
+   "status": 201,
+   "body": {
+    "success": true,
+    "data": {
+     "_id": "6abe6d71d7ea35df06f9bd99",
+     "doctorId": "6aa85e2fb0083185ed54c887",
+     "date": "2026-11-24T00:00:00.000Z",
+     "timeSlot": "15:30",
+     "status": "scheduled"
+    }
+   }
+  }
+ },
+ "result": "Two scheduled appointments for the same doctor, date and slot: 6abe6d70d7ea35df06f9bd98 (A) and 6abe6d71d7ea35df06f9bd99 (B)",
+ "cleanup": {
+  "A": 200,
+  "B": 200
+ }
+}

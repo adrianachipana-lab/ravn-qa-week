@@ -1,0 +1,109 @@
+{
+ "captured": "2026-09-29T20:17:10.717Z",
+ "clinicLocalNow": "2026-09-29 15:17 (UTC−5)",
+ "scenarios": {
+  "TP-17": {
+   "expected": "past-today and <15-min slots not offered; POST 400",
+   "slotsEndpoint": {
+    "available": true,
+    "offeredAlreadyPast": [
+     "07:00",
+     "07:30",
+     "08:00",
+     "08:30",
+     "09:00",
+     "09:30",
+     "10:00",
+     "10:30",
+     "11:00",
+     "11:30",
+     "12:00",
+     "12:30",
+     "13:00",
+     "13:30",
+     "14:00"
+    ],
+    "offeredWithin15min": [],
+    "minutesUntilNextSlot": null
+   },
+   "postPastSlotToday": {
+    "request": {
+     "method": "POST",
+     "path": "/api/appointments",
+     "body": {
+      "doctorId": "6aa85e2fb0083185ed54c88a",
+      "date": "2026-09-29",
+      "timeSlot": "14:00",
+      "specialty": "General Practice",
+      "reason": "QA dry run TP-17 past-today (will cancel)"
+     }
+    },
+    "status": 201,
+    "body": {
+     "success": true,
+     "data": {
+      "_id": "6abc1cc7198542bcdcf95e87",
+      "date": "2026-09-29T00:00:00.000Z",
+      "timeSlot": "14:00",
+      "status": "scheduled"
+     }
+    }
+   },
+   "postWithinLeadTime": "not sent — next slot undefined is ? min away (outside the 15-min window)"
+  },
+  "TP-19": {
+   "expected": "403/400 for both; A05 stays scheduled",
+   "statusBefore": "scheduled",
+   "putCompleted": {
+    "request": {
+     "method": "PUT",
+     "path": "/api/appointments/6abbb6964db95823cc3f331b",
+     "body": {
+      "status": "completed"
+     }
+    },
+    "status": 200,
+    "body": {
+     "success": true,
+     "data": {
+      "_id": "6abbb6964db95823cc3f331b",
+      "date": "2026-11-02T00:00:00.000Z",
+      "timeSlot": "11:00",
+      "status": "completed"
+     }
+    }
+   },
+   "putApproved": {
+    "request": {
+     "method": "PUT",
+     "path": "/api/appointments/6abbb6964db95823cc3f331b",
+     "body": {
+      "status": "approved"
+     }
+    },
+    "status": 200,
+    "body": {
+     "success": true,
+     "data": {
+      "_id": "6abbb6964db95823cc3f331b",
+      "date": "2026-11-02T00:00:00.000Z",
+      "timeSlot": "11:00",
+      "status": "approved"
+     }
+    }
+   },
+   "statusAfterAttempts": "approved",
+   "restore": {
+    "note": "set back to scheduled so the seeded data stays valid",
+    "status": 200,
+    "finalStatus": "scheduled"
+   }
+  }
+ },
+ "cleanup": [
+  {
+   "id": "6abc1cc7198542bcdcf95e87",
+   "status": 200
+  }
+ ]
+}

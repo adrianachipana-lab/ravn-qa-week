@@ -1,0 +1,14 @@
+Capstone run 1 — 2026-10-02 09:39:52 -05
+Command: npx playwright test -c trainees/development/submissions/friday-capstone/adriana-chipana/playwright.config.ts
+
+
+Running 3 tests using 1 worker
+
+  ✓  1 [ui] › trainees/development/submissions/friday-capstone/adriana-chipana/tests/profile-ui.spec.ts:24:7 › MEDIC-108 SC-01 — update name and phone in the profile UI › patient saves a new name and phone and sees them after reload (7.2s)
+  ✓  2 [api] › trainees/development/submissions/friday-capstone/adriana-chipana/tests/profile-api.spec.ts:15:7 › MEDIC-108 — PUT /api/profile protects identity fields › SC-03: no session → 401 UNAUTHORIZED, nothing changes (920ms)
+  ✓  3 [api] › trainees/development/submissions/friday-capstone/adriana-chipana/tests/profile-api.spec.ts:29:7 › MEDIC-108 — PUT /api/profile protects identity fields › SC-04: email (and role) cannot be changed through the profile endpoint (2.6s)
+
+  3 passed (12.5s)
+real 13.86
+user 6.02
+sys 1.22

@@ -1,0 +1,24 @@
+{
+ "captured": "2026-09-29T20:17:42.315Z",
+ "actor": "own patient account (read only)",
+ "appointment": "6aba799fa6236c75a6e7d759 (Sep 29 09:00, Dr. Sarah Mitchell)",
+ "cancelledAt": "2026-09-29T04:44:25.337Z",
+ "apiFields": [
+  "_id",
+  "patientId",
+  "doctorId",
+  "date",
+  "timeSlot",
+  "specialty",
+  "reason",
+  "status",
+  "notes",
+  "createdAt",
+  "updatedAt",
+  "__v"
+ ],
+ "notes": "",
+ "detailText": "Dr. Sarah Mitchell Cancelled General Practice Date Sep 29, 2026 Time 04:00 AM Reason New patient registration visit Doctor email sarah.mitchell@medicapp.test Doctor phone (555) 100-2001",
+ "mentionsWhoOrWhy": false,
+ "toast": "(empty)"
+}

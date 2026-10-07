@@ -1,0 +1,11 @@
+{
+ "captured": "2026-10-01T15:00:53Z",
+ "how": "Read-only API calls with the same patient account the lab uses (own assigned patient), plus the public /api/test/reset counts; t06 ownership checked with the own assigned doctor account.",
+ "patientTotalsFromApi": {"total": 57, "byStatus": {"cancelled": 35, "scheduled": 17, "completed": 5}, "note": "GET /api/appointments?page=1&limit=200 is capped at limit 100 by the server, but total is 57, so all rows were returned"},
+ "dashboardShown": {"stat-total-value": "735", "dashboard-upcoming-count": "21", "stat-completed-value": "40"},
+ "systemWideCounts": {"users": 151, "doctors": 12, "appointments": 735},
+ "upcomingNext7Days": {"testDefinition_dateAtMidnightUTC": ["2026-10-07 15:00"], "slotTimeDefinition_clinicLocal": ["2026-10-07 15:00"], "note": "both definitions give 1 for this patient"},
+ "t02_hookOnPage": {"expectedByTest": "dashboard-new-appointment-button", "presentOnPage": "dashboard-new-appointment-btn (the 'Book new' button)"},
+ "t04_pageAtFailure": "appointments table body shows 'Loading...' (appointments-loading) when the rows were counted",
+ "t06_hardcodedId": {"id": "6aa85e2fb0083185ed54c8a8", "asLabPatient": {"status": 404, "error": "NOT_FOUND"}, "asDoctor": {"status": 200, "patient": "a different patient account (c***@test.com)", "doctor": "Dr. Sarah Mitchell", "date": "2026-09-16", "status": "scheduled"}}
+}

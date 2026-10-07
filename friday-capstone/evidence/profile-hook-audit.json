@@ -1,0 +1,10 @@
+{
+ "captured": "2026-10-02T14:55Z",
+ "page": "/profile (patient)",
+ "hooksPresent_idle": ["page-title", "profile-card", "profile-form", "profile-name-input", "profile-email-input", "profile-phone-input", "profile-avatar-input", "profile-save-btn", "toast-container"],
+ "hooksPresent_afterSave": ["toast-success (inside toast-container)"],
+ "hooksPresent_onSaveError (PUT forced to 500 with page.route)": ["toast-error, text 'Failed to save profile'"],
+ "savingState": {"buttonText": "Saving...", "buttonDisabled": true, "dedicatedHook": "none (state readable from the disabled attribute)"},
+ "labels": ["Name -> for=profile-name", "Email -> for=profile-email", "Phone -> for=profile-phone", "Avatar (upload) -> for=profile-avatar"],
+ "noHook": ["helper text 'Avatar uploads not yet implemented'", "avatar image / preview (no <img> rendered)", "field-level validation messages (none exist)"]
+}

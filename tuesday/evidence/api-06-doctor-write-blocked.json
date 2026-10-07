@@ -1,0 +1,41 @@
+{
+ "captured": "2026-09-29T12:59:39.368Z",
+ "role": "doctor (own account)",
+ "session": {
+  "role": "doctor",
+  "name": "Dr. Sarah Mitchell"
+ },
+ "redirectOfNewAppointmentPage": "/appointments",
+ "cases": {
+  "book_POST": {
+   "status": 403,
+   "body": {
+    "success": false,
+    "error": {
+     "code": "FORBIDDEN",
+     "message": "Doctor accounts cannot book appointments"
+    }
+   }
+  },
+  "cancel_DELETE": {
+   "status": 403,
+   "body": {
+    "success": false,
+    "error": {
+     "code": "FORBIDDEN",
+     "message": "Doctor accounts cannot cancel appointments"
+    }
+   }
+  },
+  "edit_PUT": {
+   "status": 403,
+   "body": {
+    "success": false,
+    "error": {
+     "code": "FORBIDDEN",
+     "message": "Doctor accounts cannot modify appointments"
+    }
+   }
+  }
+ }
+}

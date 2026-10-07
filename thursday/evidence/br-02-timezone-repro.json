@@ -1,0 +1,14 @@
+{
+ "captured": "2026-10-01T14:26:12Z",
+ "environment": "https://medapp-nerdery.vercel.app",
+ "actor": "seeded test patient P1",
+ "appointment": {"_id": "6abe6d84d7ea35df06f9bd9a", "doctor": "Dr. Sarah Mitchell", "storedDate": "2026-11-25T00:00:00.000Z", "storedTimeSlot": "10:00"},
+ "byBrowserTimezone": {
+  "America/Lima (UTC-5)":   {"detailShown": "Nov 24, 2026 · 05:00 AM", "serverRenderedHtml": "Nov 25, 2026 · 10:00 AM"},
+  "America/La_Paz (UTC-4)": {"detailShown": "Nov 24, 2026 · 06:00 AM", "serverRenderedHtml": "Nov 25, 2026 · 10:00 AM"},
+  "Europe/Madrid (UTC+1)":  {"detailShown": "Nov 25, 2026 · 11:00 AM", "serverRenderedHtml": "Nov 25, 2026 · 10:00 AM"}
+ },
+ "screenshot": "br-02-detail-lima.png",
+ "cleanup": "appointment cancelled after capture",
+ "interpretation": "The server stores and renders 25 Nov 10:00 (clinic time). After the page loads in the browser, the detail is re-formatted with the browser's zone: one day earlier and 5 h earlier in Lima, 4 h earlier in La Paz, 1 h later in Madrid."
+}

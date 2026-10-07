@@ -1,0 +1,9 @@
+Mutation check — 2026-10-01 09:25:10 -05
+Temporary change: expected toast text set to 'Appointment booked successfullyX' (wrong on purpose), then reverted.
+
+  ✘  1 [ui] › trainees/development/submissions/wednesday/adriana-chipana/tests/own-scenarios/book-appointment.spec.ts:18:7 › SC-01 Book appointment › patient books a free slot and sees it as Scheduled (10.8s)
+    Error: expect(locator).toContainText(expected) failed
+    Expected substring: "Appointment booked successfullyX"
+    Received string:    ""
+    trainees/development/submissions/thursday/adriana-chipana/test-results/wednesday-adriana-chipana--3f6a6-ot-and-sees-it-as-Scheduled-ui/test-failed-1.png
+  1 failed

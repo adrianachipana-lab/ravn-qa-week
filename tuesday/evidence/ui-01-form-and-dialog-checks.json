@@ -1,0 +1,13 @@
+{
+  "captured": "2026-09-29T13:04:15Z",
+  "role": "patient (own account)",
+  "checks": {
+    "cancelled_detail_buttons": {"appointment": "6aba799fa6236c75a6e7d759", "status_badge": "status-badge-cancelled", "buttons_in_main": [], "meaning": "cancelled appointment is read-only (no Edit / Cancel)"},
+    "booked_slot_shown_as_free": {"doctor": "Dr. Michael Thompson", "date": "2026-10-20", "slot": "07:00", "booked_by_seed": "A01 (scheduled)", "time-slot-07:00 disabled": false, "meaning": "slot grid does not reflect an existing booking"},
+    "submit_without_reason": {"appointment-form-submit-btn disabled": true},
+    "reason_only_spaces": {"appointment-form-submit-btn disabled": true},
+    "reason_maxlength_attribute": 500,
+    "reason_520_chars_set_programmatically": {"value_length": 520, "reason-char-count": "520/500", "submit disabled": false, "meaning": "typing is capped by maxlength; beyond that the form does not validate the length"},
+    "confirmation_dialog_cancel": {"modal_open_after_review": true, "modal_open_after_cancel_click": false, "requests_to_/api/appointments": 0, "url_after": "/appointments/new"}
+  }
+}

@@ -1,0 +1,89 @@
+{
+ "captured": "2026-09-29T12:58:58.785795Z",
+ "role": "unauthenticated (no session cookie)",
+ "cases": {
+  "list_appointments": {
+   "request": {
+    "method": "GET",
+    "url": "/api/appointments",
+    "body": null
+   },
+   "status": 401,
+   "location": null,
+   "body": {
+    "success": false,
+    "error": {
+     "code": "UNAUTHORIZED",
+     "message": "Not authenticated"
+    }
+   }
+  },
+  "book_appointment": {
+   "request": {
+    "method": "POST",
+    "url": "/api/appointments",
+    "body": {
+     "doctorId": "6aa85e2fb0083185ed54c887",
+     "date": "2026-10-14",
+     "timeSlot": "10:00",
+     "reason": "x"
+    }
+   },
+   "status": 401,
+   "location": null,
+   "body": {
+    "success": false,
+    "error": {
+     "code": "UNAUTHORIZED",
+     "message": "Not authenticated"
+    }
+   }
+  },
+  "cancel_appointment": {
+   "request": {
+    "method": "DELETE",
+    "url": "/api/appointments/6abbb57f4db95823cc3f3311",
+    "body": null
+   },
+   "status": 401,
+   "location": null,
+   "body": {
+    "success": false,
+    "error": {
+     "code": "UNAUTHORIZED",
+     "message": ""
+    }
+   }
+  },
+  "page_appointments_new": {
+   "request": {
+    "method": "GET",
+    "url": "/appointments/new",
+    "body": null
+   },
+   "status": 307,
+   "location": "/login",
+   "body": null
+  },
+  "page_appointment_detail": {
+   "request": {
+    "method": "GET",
+    "url": "/appointments/6abbb57f4db95823cc3f3311",
+    "body": null
+   },
+   "status": 307,
+   "location": "/login",
+   "body": null
+  },
+  "doctors_list_public": {
+   "request": {
+    "method": "GET",
+    "url": "/api/doctors",
+    "body": null
+   },
+   "status": 200,
+   "location": null,
+   "body": "(200, public doctor directory \u2014 body omitted)"
+  }
+ }
+}

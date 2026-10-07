@@ -1,0 +1,229 @@
+{
+  "base": "https://medapp-nerdery.vercel.app",
+  "run": "2609291300",
+  "createdAt": "2026-09-29T13:00:58.802Z",
+  "patients": [
+    {
+      "key": "P1",
+      "email": "qa.adriana.tue.2609291300.p1@test.com",
+      "registerStatus": 201
+    },
+    {
+      "key": "P2",
+      "email": "qa.adriana.tue.2609291300.p2@test.com",
+      "registerStatus": 201
+    },
+    {
+      "key": "P3",
+      "email": "qa.adriana.tue.2609291300.p3@test.com",
+      "registerStatus": 201
+    },
+    {
+      "key": "P4",
+      "email": "qa.adriana.tue.2609291300.p4@test.com",
+      "registerStatus": 201
+    },
+    {
+      "key": "P5",
+      "email": "qa.adriana.tue.2609291300.p5@test.com",
+      "registerStatus": 201
+    }
+  ],
+  "appointments": [
+    {
+      "id": "A01",
+      "p": 1,
+      "doc": "thompson",
+      "days": 21,
+      "slot": "first",
+      "final": "scheduled",
+      "scenario": "Happy-path booking; view in list/detail",
+      "patient": "P1",
+      "doctor": "Dr. Michael Thompson",
+      "specialty": "General Practice",
+      "date": "2026-10-20",
+      "timeSlot": "07:00",
+      "_id": "6abbb6924db95823cc3f3317",
+      "steps": [
+        "POST 201"
+      ],
+      "storedStatus": "scheduled"
+    },
+    {
+      "id": "A02",
+      "p": 1,
+      "doc": "patel",
+      "days": 22,
+      "slot": 2,
+      "final": "scheduled",
+      "scenario": "Cancel happy path (target to cancel during the test)",
+      "patient": "P1",
+      "doctor": "Dr. Priya Patel",
+      "specialty": "Cardiology",
+      "date": "2026-10-22",
+      "timeSlot": "10:00",
+      "_id": "6abbb6934db95823cc3f3318",
+      "steps": [
+        "POST 201"
+      ],
+      "storedStatus": "scheduled"
+    },
+    {
+      "id": "A03",
+      "p": 2,
+      "doc": "thompson",
+      "days": 23,
+      "slot": "lastValid",
+      "final": "scheduled",
+      "scenario": "Boundary: last slot that fits working hours",
+      "patient": "P2",
+      "doctor": "Dr. Michael Thompson",
+      "specialty": "General Practice",
+      "date": "2026-10-22",
+      "timeSlot": "13:30",
+      "_id": "6abbb6944db95823cc3f3319",
+      "steps": [
+        "POST 201"
+      ],
+      "storedStatus": "scheduled"
+    },
+    {
+      "id": "A04",
+      "p": 2,
+      "doc": "okonkwo",
+      "days": 24,
+      "slot": 3,
+      "final": "cancelled",
+      "scenario": "Cancelled state in list/filter; re-cancel is idempotent",
+      "patient": "P2",
+      "doctor": "Dr. Leila Okonkwo",
+      "specialty": "Endocrinology",
+      "date": "2026-10-27",
+      "timeSlot": "09:30",
+      "_id": "6abbb6954db95823cc3f331a",
+      "steps": [
+        "POST 201",
+        "DELETE 200"
+      ],
+      "storedStatus": "cancelled"
+    },
+    {
+      "id": "A05",
+      "p": 3,
+      "doc": "patel",
+      "days": 25,
+      "slot": 4,
+      "final": "rescheduled",
+      "scenario": "Edit/reschedule: moved +7 days via PUT",
+      "patient": "P3",
+      "doctor": "Dr. Priya Patel",
+      "specialty": "Cardiology",
+      "date": "2026-11-02",
+      "timeSlot": "11:00",
+      "_id": "6abbb6964db95823cc3f331b",
+      "steps": [
+        "POST 201",
+        "PUT 200 2026-10-26 -> 2026-11-02"
+      ],
+      "storedStatus": "scheduled",
+      "originalDate": "2026-10-26"
+    },
+    {
+      "id": "A06",
+      "p": 3,
+      "doc": "thompson",
+      "days": 28,
+      "slot": 5,
+      "final": "cancelled",
+      "scenario": "Slot freed by cancellation (paired with A07)",
+      "patient": "P3",
+      "doctor": "Dr. Michael Thompson",
+      "specialty": "General Practice",
+      "date": "2026-10-27",
+      "timeSlot": "09:30",
+      "_id": "6abbb6974db95823cc3f331c",
+      "steps": [
+        "POST 201",
+        "DELETE 200"
+      ],
+      "storedStatus": "cancelled"
+    },
+    {
+      "id": "A07",
+      "p": 4,
+      "doc": "thompson",
+      "days": 28,
+      "slot": "sameAs:A06",
+      "final": "scheduled",
+      "scenario": "Re-book a slot released by another patient",
+      "patient": "P4",
+      "doctor": "Dr. Michael Thompson",
+      "specialty": "General Practice",
+      "date": "2026-10-27",
+      "timeSlot": "09:30",
+      "_id": "6abbb6984db95823cc3f331d",
+      "steps": [
+        "POST 201"
+      ],
+      "storedStatus": "scheduled"
+    },
+    {
+      "id": "A08",
+      "p": 4,
+      "doc": "okonkwo",
+      "days": 31,
+      "slot": 2,
+      "final": "scheduled",
+      "scenario": "Pre-booked slot for the double-booking test (P5 tries the same slot)",
+      "patient": "P4",
+      "doctor": "Dr. Leila Okonkwo",
+      "specialty": "Endocrinology",
+      "date": "2026-11-03",
+      "timeSlot": "09:00",
+      "_id": "6abbb6994db95823cc3f331e",
+      "steps": [
+        "POST 201"
+      ],
+      "storedStatus": "scheduled"
+    },
+    {
+      "id": "A09",
+      "p": 5,
+      "doc": "patel",
+      "days": 32,
+      "slot": 6,
+      "final": "cancelled",
+      "scenario": "Cancelled by owner; other patient cannot cancel it (404)",
+      "patient": "P5",
+      "doctor": "Dr. Priya Patel",
+      "specialty": "Cardiology",
+      "date": "2026-11-02",
+      "timeSlot": "12:00",
+      "_id": "6abbb6994db95823cc3f331f",
+      "steps": [
+        "POST 201",
+        "DELETE 200"
+      ],
+      "storedStatus": "cancelled"
+    },
+    {
+      "id": "A10",
+      "p": 5,
+      "doc": "okonkwo",
+      "days": 60,
+      "slot": "first",
+      "final": "scheduled",
+      "scenario": "Far-future row for sort/pagination checks",
+      "patient": "P5",
+      "doctor": "Dr. Leila Okonkwo",
+      "specialty": "Endocrinology",
+      "date": "2026-12-01",
+      "timeSlot": "08:00",
+      "_id": "6abbb69a4db95823cc3f3320",
+      "steps": [
+        "POST 201"
+      ],
+      "storedStatus": "scheduled"
+    }
+  ]
+}

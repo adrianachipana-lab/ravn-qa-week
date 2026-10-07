@@ -1,0 +1,16 @@
+{
+ "captured": "2026-10-01T17:29:49Z",
+ "report": "Emmanuel Martinez, BUG-010 (PR #124)",
+ "account": "throwaway seeded patient",
+ "browser": "Chromium (Playwright 1.63), macOS, no network throttling",
+ "values_used": {"doctor": "Dr. Michael Thompson (not assigned to a trainee)", "date": "2026-12-03", "timeSlot": "11:30", "reason": "QA Thu peer-review BUG-010 repro <timestamp>"},
+ "steps_followed": "1-5 as written (Book new on the dashboard, fill the form, Review & book, click Confirm booking 5 times quickly)",
+ "results": {
+  "confirmButtonDisabledAfterClicks": [false, false, false, false],
+  "POST /api/appointments responses": [201, 201, 201, 201, 201],
+  "appointmentsCreated": 5,
+  "createdAt": ["17:29:44.094Z", "17:29:44.106Z", "17:29:44.115Z", "17:29:44.130Z", "17:29:44.134Z"],
+  "sameDoctorDateSlot": true
+ },
+ "cleanup": "all 5 cancelled (DELETE 200 x5)"
+}

@@ -1,0 +1,472 @@
+{
+ "captured": "2026-09-29T14:50:00.203Z",
+ "actors": "seeded patients P1, P4, P5 (see test-data-sheet.md)",
+ "scenarios": {
+  "TP-02": {
+   "expected": "slot shown as taken; POST 409",
+   "slotInApi": {
+    "time": "09:00",
+    "available": true
+   },
+   "post": {
+    "request": {
+     "method": "POST",
+     "path": "/api/appointments",
+     "body": {
+      "doctorId": "6aa86161517271c458e7b6c2",
+      "date": "2026-11-03",
+      "timeSlot": "09:00",
+      "specialty": "Endocrinology",
+      "reason": "QA dry run TP-02 (will cancel)"
+     }
+    },
+    "status": 201,
+    "body": {
+     "success": true,
+     "data": {
+      "_id": "6abbd018dfeab26546419bec",
+      "date": "2026-11-03T00:00:00.000Z",
+      "timeSlot": "09:00",
+      "status": "scheduled",
+      "specialty": "Endocrinology",
+      "reason": "QA dry run TP-02 (will cancel)"
+     }
+    }
+   }
+  },
+  "TP-03": {
+   "expected": "exactly one 201, others 409",
+   "statuses": [
+    201,
+    201,
+    201
+   ],
+   "posts": [
+    {
+     "by": "P4",
+     "request": {
+      "method": "POST",
+      "path": "/api/appointments",
+      "body": {
+       "doctorId": "6aa85e2fb0083185ed54c88a",
+       "date": "2026-10-30",
+       "timeSlot": "08:00",
+       "specialty": "General Practice",
+       "reason": "QA dry run TP-03 #1 (will cancel)"
+      }
+     },
+     "status": 201,
+     "body": {
+      "success": true,
+      "data": {
+       "_id": "6abbd019dfeab26546419bed",
+       "date": "2026-10-30T00:00:00.000Z",
+       "timeSlot": "08:00",
+       "status": "scheduled",
+       "specialty": "General Practice",
+       "reason": "QA dry run TP-03 #1 (will cancel)"
+      }
+     }
+    },
+    {
+     "by": "P5",
+     "request": {
+      "method": "POST",
+      "path": "/api/appointments",
+      "body": {
+       "doctorId": "6aa85e2fb0083185ed54c88a",
+       "date": "2026-10-30",
+       "timeSlot": "08:00",
+       "specialty": "General Practice",
+       "reason": "QA dry run TP-03 #2 (will cancel)"
+      }
+     },
+     "status": 201,
+     "body": {
+      "success": true,
+      "data": {
+       "_id": "6abbd019dfeab26546419bee",
+       "date": "2026-10-30T00:00:00.000Z",
+       "timeSlot": "08:00",
+       "status": "scheduled",
+       "specialty": "General Practice",
+       "reason": "QA dry run TP-03 #2 (will cancel)"
+      }
+     }
+    },
+    {
+     "by": "P4",
+     "request": {
+      "method": "POST",
+      "path": "/api/appointments",
+      "body": {
+       "doctorId": "6aa85e2fb0083185ed54c88a",
+       "date": "2026-10-30",
+       "timeSlot": "08:00",
+       "specialty": "General Practice",
+       "reason": "QA dry run TP-03 #3 (will cancel)"
+      }
+     },
+     "status": 201,
+     "body": {
+      "success": true,
+      "data": {
+       "_id": "6abbd019dfeab26546419bef",
+       "date": "2026-10-30T00:00:00.000Z",
+       "timeSlot": "08:00",
+       "status": "scheduled",
+       "specialty": "General Practice",
+       "reason": "QA dry run TP-03 #3 (will cancel)"
+      }
+     }
+    }
+   ]
+  },
+  "TP-04 (API part)": {
+   "expected": "400",
+   "post": {
+    "request": {
+     "method": "POST",
+     "path": "/api/appointments",
+     "body": {
+      "doctorId": "6aa85e2fb0083185ed54c88a",
+      "date": "2026-09-28",
+      "timeSlot": "09:00",
+      "specialty": "General Practice",
+      "reason": "QA dry run TP-04 (will cancel)"
+     }
+    },
+    "status": 201,
+    "body": {
+     "success": true,
+     "data": {
+      "_id": "6abbd019dfeab26546419bf0",
+      "date": "2026-09-28T00:00:00.000Z",
+      "timeSlot": "09:00",
+      "status": "scheduled",
+      "specialty": "General Practice",
+      "reason": "QA dry run TP-04 (will cancel)"
+     }
+    }
+   }
+  },
+  "TP-05": {
+   "expected": "last slot 13:30; 14:00 not offered (D1 07:00–14:00, 30 min)",
+   "first": "07:00",
+   "last": "14:00",
+   "count": 15
+  },
+  "TP-07": {
+   "expected": "Monday slots empty; both POSTs 400",
+   "slotsMonday": {
+    "date": "2026-10-26",
+    "available": false,
+    "slots": []
+   },
+   "postMonday": {
+    "request": {
+     "method": "POST",
+     "path": "/api/appointments",
+     "body": {
+      "doctorId": "6aa86161517271c458e7b6c2",
+      "date": "2026-10-26",
+      "timeSlot": "09:00",
+      "specialty": "Endocrinology",
+      "reason": "QA dry run TP-07 monday (will cancel)"
+     }
+    },
+    "status": 201,
+    "body": {
+     "success": true,
+     "data": {
+      "_id": "6abbd01adfeab26546419bf1",
+      "date": "2026-10-26T00:00:00.000Z",
+      "timeSlot": "09:00",
+      "status": "scheduled",
+      "specialty": "Endocrinology",
+      "reason": "QA dry run TP-07 monday (will cancel)"
+     }
+    }
+   },
+   "post0300": {
+    "request": {
+     "method": "POST",
+     "path": "/api/appointments",
+     "body": {
+      "doctorId": "6aa85e2fb0083185ed54c88a",
+      "date": "2026-10-21",
+      "timeSlot": "03:00",
+      "specialty": "General Practice",
+      "reason": "QA dry run TP-07 03:00 (will cancel)"
+     }
+    },
+    "status": 201,
+    "body": {
+     "success": true,
+     "data": {
+      "_id": "6abbd01adfeab26546419bf2",
+      "date": "2026-10-21T00:00:00.000Z",
+      "timeSlot": "03:00",
+      "status": "scheduled",
+      "specialty": "General Practice",
+      "reason": "QA dry run TP-07 03:00 (will cancel)"
+     }
+    }
+   }
+  },
+  "TP-08": {
+   "expected": "404 or 400",
+   "post": {
+    "request": {
+     "method": "POST",
+     "path": "/api/appointments",
+     "body": {
+      "doctorId": "000000000000000000000000",
+      "date": "2026-10-21",
+      "timeSlot": "09:00",
+      "reason": "QA dry run TP-08 (will cancel)"
+     }
+    },
+    "status": 201,
+    "body": {
+     "success": true,
+     "data": {
+      "_id": "6abbd01adfeab26546419bf3",
+      "date": "2026-10-21T00:00:00.000Z",
+      "timeSlot": "09:00",
+      "status": "scheduled",
+      "specialty": "Unknown",
+      "reason": "QA dry run TP-08 (will cancel)"
+     }
+    }
+   }
+  },
+  "TP-09": {
+   "expected": "400; 401",
+   "missing": {
+    "request": {
+     "method": "POST",
+     "path": "/api/appointments",
+     "body": {
+      "doctorId": "6aa85e2fb0083185ed54c88a"
+     }
+    },
+    "status": 400,
+    "body": {
+     "success": false,
+     "error": {
+      "code": "VALIDATION_ERROR",
+      "message": "Missing fields: date, timeSlot, reason"
+     }
+    }
+   },
+   "noSession": {
+    "request": {
+     "method": "POST",
+     "path": "/api/appointments",
+     "body": {
+      "doctorId": "6aa85e2fb0083185ed54c88a",
+      "date": "2026-10-21",
+      "timeSlot": "09:00",
+      "reason": "x"
+     }
+    },
+    "status": 401,
+    "body": {
+     "success": false,
+     "error": {
+      "code": "UNAUTHORIZED",
+      "message": "Not authenticated"
+     }
+    }
+   }
+  },
+  "TP-11": {
+   "expected": "GET 404, DELETE 404, A09 unchanged",
+   "get": {
+    "request": {
+     "method": "GET",
+     "path": "/api/appointments/6abbb6994db95823cc3f331f",
+     "body": null
+    },
+    "status": 404,
+    "body": {
+     "success": false,
+     "error": {
+      "code": "NOT_FOUND",
+      "message": "Appointment not found"
+     }
+    }
+   },
+   "del": {
+    "request": {
+     "method": "DELETE",
+     "path": "/api/appointments/6abbb6994db95823cc3f331f",
+     "body": null
+    },
+    "status": 404,
+    "body": {
+     "success": false,
+     "error": {
+      "code": "NOT_FOUND",
+      "message": "Appointment not found"
+     }
+    }
+   },
+   "ownerControl": {
+    "request": {
+     "method": "GET",
+     "path": "/api/appointments/6abbb6994db95823cc3f331f",
+     "body": null
+    },
+    "status": 200,
+    "body": {
+     "success": true,
+     "data": {
+      "_id": "6abbb6994db95823cc3f331f",
+      "date": "2026-11-02T00:00:00.000Z",
+      "timeSlot": "12:00",
+      "status": "cancelled",
+      "specialty": "Cardiology",
+      "reason": "QA Tue seed A09 - Cancelled by owner; other patient cannot cancel it (404)"
+     }
+    }
+   }
+  },
+  "TP-13": {
+   "expected": "A07 scheduled on the slot A06 released",
+   "A06": {
+    "date": "2026-10-27",
+    "timeSlot": "09:30",
+    "status": "cancelled"
+   },
+   "A07": {
+    "success": true,
+    "data": {
+     "_id": "6abbb6984db95823cc3f331d",
+     "date": "2026-10-27T00:00:00.000Z",
+     "timeSlot": "09:30",
+     "status": "scheduled",
+     "specialty": "General Practice",
+     "reason": "QA Tue seed A07 - Re-book a slot released by another patient"
+    }
+   }
+  },
+  "TP-14": {
+   "expected": "200, still cancelled",
+   "del": {
+    "request": {
+     "method": "DELETE",
+     "path": "/api/appointments/6abbb6954db95823cc3f331a",
+     "body": null
+    },
+    "status": 200,
+    "body": {
+     "success": true,
+     "data": {
+      "_id": "6abbb6954db95823cc3f331a",
+      "date": "2026-10-27T00:00:00.000Z",
+      "timeSlot": "09:30",
+      "status": "cancelled",
+      "specialty": "Endocrinology",
+      "reason": "QA Tue seed A04 - Cancelled state in list/filter; re-cancel is idempotent"
+     }
+    }
+   }
+  },
+  "TP-15": {
+   "expected": "both edits 400/409; A05 unchanged",
+   "toPastDate": {
+    "request": {
+     "method": "PUT",
+     "path": "/api/appointments/6abbb6964db95823cc3f331b",
+     "body": {
+      "date": "2026-09-01",
+      "timeSlot": "11:00"
+     }
+    },
+    "status": 200,
+    "body": {
+     "success": true,
+     "data": {
+      "_id": "6abbb6964db95823cc3f331b",
+      "date": "2026-09-01T00:00:00.000Z",
+      "timeSlot": "11:00",
+      "status": "scheduled",
+      "specialty": "Cardiology",
+      "reason": "QA Tue seed A05 - Edit/reschedule: moved +7 days via PUT (rescheduled)"
+     }
+    }
+   },
+   "toTakenSlot": {
+    "request": {
+     "method": "PUT",
+     "path": "/api/appointments/6abbb6964db95823cc3f331b",
+     "body": {
+      "date": "2026-11-03",
+      "timeSlot": "09:00"
+     }
+    },
+    "status": 200,
+    "body": {
+     "success": true,
+     "data": {
+      "_id": "6abbb6964db95823cc3f331b",
+      "date": "2026-11-03T00:00:00.000Z",
+      "timeSlot": "09:00",
+      "status": "scheduled",
+      "specialty": "Cardiology",
+      "reason": "QA Tue seed A05 - Edit/reschedule: moved +7 days via PUT (rescheduled)"
+     }
+    }
+   },
+   "restoredTo": {
+    "status": 200,
+    "date": "2026-11-02",
+    "timeSlot": "11:00"
+   }
+  }
+ },
+ "cleanup": [
+  {
+   "id": "6abbd018dfeab26546419bec",
+   "by": "P5",
+   "status": 200
+  },
+  {
+   "id": "6abbd019dfeab26546419bed",
+   "by": "P4",
+   "status": 200
+  },
+  {
+   "id": "6abbd019dfeab26546419bee",
+   "by": "P5",
+   "status": 200
+  },
+  {
+   "id": "6abbd019dfeab26546419bef",
+   "by": "P4",
+   "status": 200
+  },
+  {
+   "id": "6abbd019dfeab26546419bf0",
+   "by": "P1",
+   "status": 200
+  },
+  {
+   "id": "6abbd01adfeab26546419bf1",
+   "by": "P1",
+   "status": 200
+  },
+  {
+   "id": "6abbd01adfeab26546419bf2",
+   "by": "P1",
+   "status": 200
+  },
+  {
+   "id": "6abbd01adfeab26546419bf3",
+   "by": "P1",
+   "status": 200
+  }
+ ]
+}

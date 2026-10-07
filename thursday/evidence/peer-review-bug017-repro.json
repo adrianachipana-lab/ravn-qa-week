@@ -1,0 +1,17 @@
+{
+ "captured": "2026-10-01T17:29:17Z",
+ "report": "Emmanuel Martinez, BUG-017 (PR #124)",
+ "account": "throwaway seeded patient (any patient account works)",
+ "browser": "Chromium (Playwright 1.63), macOS",
+ "steps_followed": "1-7 as written",
+ "results": {
+  "cookiesBeforeLogout": ["__Host-next-auth.csrf-token", "__Secure-next-auth.callback-url", "__Secure-next-auth.session-token (expires 2026-10-02T01:29:12Z)"],
+  "requestsTo_/api/auth/signout_whenClickingLogout": [],
+  "urlAfterLogout": "/login",
+  "cookiesAfterLogout": ["__Host-next-auth.csrf-token", "__Secure-next-auth.callback-url", "__Secure-next-auth.session-token (expires 2026-10-02T01:29:12Z)"],
+  "sessionTokenUnchangedAfterLogout": true,
+  "openDashboardAfterLogout": "/dashboard (not redirected)",
+  "oldTokenFromClientWithNoBrowserState": {"GET /api/profile": 200, "role": "patient", "GET /api/auth/session": "user present, expires 2026-10-02T01:29:17Z"}
+ },
+ "note": "Token values are not stored here. The session cookie's expiry is 8 hours after login."
+}

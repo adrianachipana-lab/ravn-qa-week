@@ -1,0 +1,14 @@
+{
+  "captured": "2026-09-29T12:56:31Z",
+  "role": "patient (own account)",
+  "trigger": "Book appointment page -> Confirm booking",
+  "request": {
+    "method": "POST",
+    "url": "/api/appointments",
+    "body": {"doctorId":"6aa85e2fb0083185ed54c887","date":"2026-10-14","timeSlot":"10:00","specialty":"General Practice","reason":"QA Tuesday flow capture (will cancel)"}
+  },
+  "response": {
+    "status": 201,
+    "body": {"success":true,"data":{"patientId":"6aa8611db0083185ed54c8b4","doctorId":"6aa85e2fb0083185ed54c887","date":"2026-10-14T00:00:00.000Z","timeSlot":"10:00","specialty":"General Practice","reason":"QA Tuesday flow capture (will cancel)","status":"scheduled","notes":"","_id":"6abbb57f4db95823cc3f3311","createdAt":"2026-09-29T12:56:31.925Z","updatedAt":"2026-09-29T12:56:31.925Z","__v":0}}
+  }
+}

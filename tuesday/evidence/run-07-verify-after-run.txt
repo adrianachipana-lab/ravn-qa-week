@@ -1,0 +1,12 @@
+A01 OK      expected scheduled 2026-10-20 07:00
+A02 CHANGED expected scheduled 2026-10-22 10:00 | got 200 cancelled 2026-10-22 10:00
+A03 OK      expected scheduled 2026-10-22 13:30
+A04 OK      expected cancelled 2026-10-27 09:30
+A05 OK      expected scheduled 2026-11-02 11:00
+A06 OK      expected cancelled 2026-10-27 09:30
+A07 OK      expected scheduled 2026-10-27 09:30
+A08 OK      expected scheduled 2026-11-03 09:00
+A09 OK      expected cancelled 2026-11-02 12:00
+A10 OK      expected scheduled 2026-12-01 08:00
+
+1 row(s) changed — re-seed before testing.

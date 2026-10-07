@@ -1,0 +1,11 @@
+{
+  "captured": "2026-09-29T12:57:30Z",
+  "role": "patient (own account)",
+  "trigger": "Appointment detail -> Edit -> Save changes",
+  "request": {
+    "method": "PUT",
+    "url": "/api/appointments/6abbb57f4db95823cc3f3311",
+    "body": {"date":"2026-10-14","timeSlot":"10:00","reason":"QA Tuesday flow capture - edited (will cancel)"}
+  },
+  "response": {"status": 200}
+}

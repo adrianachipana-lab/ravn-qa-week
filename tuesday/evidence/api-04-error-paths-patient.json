@@ -1,0 +1,328 @@
+{
+ "captured": "2026-09-29T12:58:39.715Z",
+ "role": "patient (own account)",
+ "cases": {
+  "missing_fields": {
+   "request": {
+    "method": "POST",
+    "url": "/api/appointments",
+    "body": {
+     "doctorId": "6aa85e2fb0083185ed54c887"
+    }
+   },
+   "status": 400,
+   "body": {
+    "success": false,
+    "error": {
+     "code": "VALIDATION_ERROR",
+     "message": "Missing fields: date, timeSlot, reason"
+    }
+   }
+  },
+  "slots_missing_date": {
+   "request": {
+    "method": "GET",
+    "url": "/api/doctors/6aa85e2fb0083185ed54c887/slots",
+    "body": null
+   },
+   "status": 400,
+   "body": {
+    "success": false,
+    "error": {
+     "code": "VALIDATION_ERROR",
+     "message": "date is required"
+    }
+   }
+  },
+  "slots_ok_weekday": {
+   "request": {
+    "method": "GET",
+    "url": "/api/doctors/6aa85e2fb0083185ed54c887/slots?date=2026-10-14",
+    "body": null
+   },
+   "status": 200,
+   "body": {
+    "success": true,
+    "data": {
+     "date": "2026-10-14",
+     "available": true,
+     "slots": [
+      "09:00",
+      "09:30",
+      "10:00",
+      "10:30",
+      "11:00",
+      "11:30",
+      "12:00",
+      "12:30",
+      "13:00",
+      "13:30",
+      "14:00",
+      "14:30",
+      "15:00",
+      "15:30",
+      "16:00",
+      "16:30",
+      "17:00"
+     ]
+    }
+   }
+  },
+  "slots_weekend": {
+   "request": {
+    "method": "GET",
+    "url": "/api/doctors/6aa85e2fb0083185ed54c887/slots?date=2026-10-18",
+    "body": null
+   },
+   "status": 200,
+   "body": {
+    "success": true,
+    "data": {
+     "date": "2026-10-18",
+     "available": false,
+     "slots": []
+    }
+   }
+  },
+  "get_other_patients_appointment": {
+   "request": {
+    "method": "GET",
+    "url": "/api/appointments/6aac18951fdf457981f7828c",
+    "body": null
+   },
+   "status": 404,
+   "body": {
+    "success": false,
+    "error": {
+     "code": "NOT_FOUND",
+     "message": "Appointment not found"
+    }
+   }
+  },
+  "cancel_other_patients_appointment": {
+   "request": {
+    "method": "DELETE",
+    "url": "/api/appointments/6aac18951fdf457981f7828c",
+    "body": null
+   },
+   "status": 404,
+   "body": {
+    "success": false,
+    "error": {
+     "code": "NOT_FOUND",
+     "message": "Appointment not found"
+    }
+   }
+  },
+  "get_malformed_id": {
+   "request": {
+    "method": "GET",
+    "url": "/api/appointments/abc",
+    "body": null
+   },
+   "status": 500,
+   "body": ""
+  },
+  "doctors_list": {
+   "request": {
+    "method": "GET",
+    "url": "/api/doctors",
+    "body": null
+   },
+   "status": 200,
+   "body": {
+    "success": true,
+    "data": [
+     {
+      "_id": "6aa85e2fb0083185ed54c88c",
+      "name": "Dr. Aisha Williams",
+      "specialty": "Pediatrics",
+      "availableDays": [
+       1,
+       2,
+       3,
+       4,
+       5
+      ],
+      "workingHours": {
+       "start": "09:00",
+       "end": "17:00"
+      },
+      "slotDurationMin": 30
+     },
+     {
+      "_id": "6aa85e2fb0083185ed54c889",
+      "name": "Dr. Emily Chen",
+      "specialty": "Dermatology",
+      "availableDays": [
+       2,
+       4
+      ],
+      "workingHours": {
+       "start": "10:00",
+       "end": "18:00"
+      },
+      "slotDurationMin": 30
+     },
+     {
+      "_id": "6aa85e2fb0083185ed54c88e",
+      "name": "Dr. Hannah Kim",
+      "specialty": "Neurology",
+      "availableDays": [
+       2,
+       4
+      ],
+      "workingHours": {
+       "start": "10:00",
+       "end": "17:00"
+      },
+      "slotDurationMin": 45
+     },
+     {
+      "_id": "6aa85e2fb0083185ed54c888",
+      "name": "Dr. James Rodriguez",
+      "specialty": "Cardiology",
+      "availableDays": [
+       1,
+       3,
+       5
+      ],
+      "workingHours": {
+       "start": "08:00",
+       "end": "15:00"
+      },
+      "slotDurationMin": 45
+     },
+     {
+      "_id": "6aa86161517271c458e7b6c2",
+      "name": "Dr. Leila Okonkwo",
+      "specialty": "Endocrinology",
+      "availableDays": [
+       2,
+       4
+      ],
+      "workingHours": {
+       "start": "08:00",
+       "end": "15:00"
+      },
+      "slotDurationMin": 30
+     },
+     {
+      "_id": "6aa86161517271c458e7b6c1",
+      "name": "Dr. Marcus Feld",
+      "specialty": "Psychiatry",
+      "availableDays": [
+       1,
+       3,
+       5
+      ],
+      "workingHours": {
+       "start": "10:00",
+       "end": "18:00"
+      },
+      "slotDurationMin": 45
+     },
+     {
+      "_id": "6aa85e2fb0083185ed54c88a",
+      "name": "Dr. Michael Thompson",
+      "specialty": "General Practice",
+      "availableDays": [
+       1,
+       2,
+       3,
+       4,
+       5
+      ],
+      "workingHours": {
+       "start": "07:00",
+       "end": "14:00"
+      },
+      "slotDurationMin": 30
+     },
+     {
+      "_id": "6aa86160517271c458e7b6c0",
+      "name": "Dr. Nadia Haddad",
+      "specialty": "Ophthalmology",
+      "availableDays": [
+       1,
+       2,
+       3,
+       4,
+       5
+      ],
+      "workingHours": {
+       "start": "09:00",
+       "end": "17:00"
+      },
+      "slotDurationMin": 30
+     },
+     {
+      "_id": "6aa85e2fb0083185ed54c88b",
+      "name": "Dr. Priya Patel",
+      "specialty": "Cardiology",
+      "availableDays": [
+       1,
+       2,
+       4,
+       5
+      ],
+      "workingHours": {
+       "start": "09:00",
+       "end": "16:00"
+      },
+      "slotDurationMin": 30
+     },
+     {
+      "_id": "6aa85e2fb0083185ed54c88d",
+      "name": "Dr. Roberto Silva",
+      "specialty": "Orthopedics",
+      "availableDays": [
+       1,
+       3,
+       5
+      ],
+      "workingHours": {
+       "start": "08:00",
+       "end": "16:00"
+      },
+      "slotDurationMin": 30
+     },
+     {
+      "_id": "6aa85e2fb0083185ed54c887",
+      "name": "Dr. Sarah Mitchell",
+      "specialty": "General Practice",
+      "availableDays": [
+       1,
+       2,
+       3,
+       4,
+       5
+      ],
+      "workingHours": {
+       "start": "09:00",
+       "end": "17:00"
+      },
+      "slotDurationMin": 30
+     },
+     {
+      "_id": "6aa86161517271c458e7b6c3",
+      "name": "Dr. Tomas Varga",
+      "specialty": "ENT",
+      "availableDays": [
+       1,
+       2,
+       3,
+       4,
+       5
+      ],
+      "workingHours": {
+       "start": "09:00",
+       "end": "16:00"
+      },
+      "slotDurationMin": 30
+     }
+    ]
+   }
+  }
+ }
+}

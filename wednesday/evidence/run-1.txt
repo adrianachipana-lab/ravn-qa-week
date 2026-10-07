@@ -1,0 +1,195 @@
+Run 1 — 2026-09-30 10:27:29 -05 — commit 1a6ff2b (branch adriana-chipana-wednesday-ui-tests)
+Command: npx playwright test trainees/development/submissions/wednesday/adriana-chipana/tests --reporter=list
+
+
+Running 4 tests using 1 worker
+
+  ✘  1 [chromium] › trainees/development/submissions/wednesday/adriana-chipana/tests/med101-01-book-open-slot.spec.ts:19:7 › SCEN-MED101-01 Book an open slot › patient books an open, in-hours slot and sees it confirmed (12.4s)
+  ✘  2 [chromium] › trainees/development/submissions/wednesday/adriana-chipana/tests/med101-02-taken-slot-disabled.spec.ts:48:7 › SCEN-MED101-02 Booked slot is disabled for another patient › second patient cannot select a slot that is already booked (26.6s)
+  ✓  3 [chromium] › trainees/development/submissions/wednesday/adriana-chipana/tests/own-scenarios/book-appointment.spec.ts:18:7 › SC-01 Book appointment › patient books a free slot and sees it as Scheduled (6.8s)
+  ✓  4 [chromium] › trainees/development/submissions/wednesday/adriana-chipana/tests/own-scenarios/cancel-appointment.spec.ts:36:7 › SC-02 Cancel appointment › patient cancels a scheduled appointment and sees it as Cancelled (7.3s)
+
+
+  1) [chromium] › trainees/development/submissions/wednesday/adriana-chipana/tests/med101-01-book-open-slot.spec.ts:19:7 › SCEN-MED101-01 Book an open slot › patient books an open, in-hours slot and sees it confirmed 
+
+    Error: AC confirmation message after booking
+
+    expect(locator).toContainText(expected) failed
+
+    Locator: getByTestId('toast-container')
+    Expected substring: "Your appointment with Dr. Sarah Mitchell on 2026-11-23 at 14:00 has been confirmed"
+    Received string:    ""
+    Timeout: 5000ms
+
+    Call log:
+      - AC confirmation message after booking getByTestId('toast-container') with timeout 5000ms
+      - waiting for getByTestId('toast-container')
+        5 × locator resolved to <div aria-hidden="true" data-aria-hidden="true" data-testid="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2">…</div>
+          - unexpected value "Appointment booked successfully"
+        7 × locator resolved to <div data-testid="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2">…</div>
+          - unexpected value "Appointment booked successfully"
+        2 × locator resolved to <div data-testid="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2"></div>
+          - unexpected value ""
+
+
+      58 |     await expect
+      59 |       .soft(page.getByTestId('toast-container'), 'AC confirmation message after booking')
+    > 60 |       .toContainText(message, { timeout: 5_000 });
+         |        ^
+      61 |
+      62 |     // And the appointment appears in the Appointments list with status "Scheduled"
+      63 |     await expect(page).toHaveURL(/\/appointments$/);
+
+    Error: Booked 14:00 slot must not be available to other patients
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      73 |     const slots = await (await otherPatient.get(`/api/doctors/${MITCHELL.id}/slots?date=${slot.date}`)).json();
+      74 |     const bookedSlot = slots.data.slots.find((s: { time: string }) => s.time === slot.time);
+    > 75 |     expect.soft(bookedSlot?.available, 'Booked 14:00 slot must not be available to other patients').toBe(false);
+         |                                                                                                     ^
+      76 |     await otherPatient.dispose();
+      77 |   });
+      78 | });
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/trainees-development-submi-50d7c--slot-and-sees-it-confirmed-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/trainees-development-submi-50d7c--slot-and-sees-it-confirmed-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/trainees-development-submi-50d7c--slot-and-sees-it-confirmed-chromium/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/trainees-development-submi-50d7c--slot-and-sees-it-confirmed-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/trainees-development-submi-50d7c--slot-and-sees-it-confirmed-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › trainees/development/submissions/wednesday/adriana-chipana/tests/med101-02-taken-slot-disabled.spec.ts:48:7 › SCEN-MED101-02 Booked slot is disabled for another patient › second patient cannot select a slot that is already booked 
+
+    Error: Booked slot must be disabled
+
+    expect(locator).toBeDisabled() failed
+
+    Locator:  getByTestId('time-slot-09:00')
+    Expected: disabled
+    Received: enabled
+    Timeout:  5000ms
+
+    Call log:
+      - Booked slot must be disabled getByTestId('time-slot-09:00') with timeout 5000ms
+      - waiting for getByTestId('time-slot-09:00')
+        14 × locator resolved to <button type="button" data-available="true" data-testid="time-slot-09:00" class="inline-flex items-center justify-center gap-2 rounded-md font-medium transition-colors disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 border border-gray-300 bg-white text-gray-900 hover:bg-gray-50 h-8 px-3 text-xs">09:00</button>
+           - unexpected value "enabled"
+
+
+      68 |     // Then the 09:00 slot is rendered as disabled …
+      69 |     // GAP: the button is enabled.
+    > 70 |     await expect.soft(takenSlot, 'Booked slot must be disabled').toBeDisabled();
+         |                                                                  ^
+      71 |     // … in a machine-readable way (the app already exposes data-available on each slot).
+      72 |     // GAP: it says "true".
+      73 |     await expect.soft(takenSlot, 'Booked slot must be marked unavailable').toHaveAttribute('data-available', 'false');
+
+    Error: Booked slot must be marked unavailable
+
+    expect(locator).toHaveAttribute(expected) failed
+
+    Locator:  getByTestId('time-slot-09:00')
+    Expected: "false"
+    Received: "true"
+    Timeout:  5000ms
+
+    Call log:
+      - Booked slot must be marked unavailable getByTestId('time-slot-09:00') with timeout 5000ms
+      - waiting for getByTestId('time-slot-09:00')
+        14 × locator resolved to <button type="button" data-available="true" data-testid="time-slot-09:00" class="inline-flex items-center justify-center gap-2 rounded-md font-medium transition-colors disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 border border-gray-300 bg-white text-gray-900 hover:bg-gray-50 h-8 px-3 text-xs">09:00</button>
+           - unexpected value "true"
+
+
+      71 |     // … in a machine-readable way (the app already exposes data-available on each slot).
+      72 |     // GAP: it says "true".
+    > 73 |     await expect.soft(takenSlot, 'Booked slot must be marked unavailable').toHaveAttribute('data-available', 'false');
+         |                                                                            ^
+      74 |     // And the patient sees the slot labeled "Unavailable".
+      75 |     // GAP: the label is just the time.
+      76 |     await expect.soft(takenSlot, 'Booked slot must be labeled "Unavailable"').toContainText('Unavailable');
+
+    Error: Booked slot must be labeled "Unavailable"
+
+    expect(locator).toContainText(expected) failed
+
+    Locator: getByTestId('time-slot-09:00')
+    Expected substring: "Unavailable"
+    Received string:    "09:00"
+    Timeout: 5000ms
+
+    Call log:
+      - Booked slot must be labeled "Unavailable" getByTestId('time-slot-09:00') with timeout 5000ms
+      - waiting for getByTestId('time-slot-09:00')
+        14 × locator resolved to <button type="button" data-available="true" data-testid="time-slot-09:00" class="inline-flex items-center justify-center gap-2 rounded-md font-medium transition-colors disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 border border-gray-300 bg-white text-gray-900 hover:bg-gray-50 h-8 px-3 text-xs">09:00</button>
+           - unexpected value "09:00"
+
+
+      74 |     // And the patient sees the slot labeled "Unavailable".
+      75 |     // GAP: the label is just the time.
+    > 76 |     await expect.soft(takenSlot, 'Booked slot must be labeled "Unavailable"').toContainText('Unavailable');
+         |                                                                               ^
+      77 |
+      78 |     // When the second patient attempts to select the 09:00 slot
+      79 |     // (a short timeout: a disabled button can't be clicked, and that's the expected outcome).
+
+    Error: Form must not accept the booked slot
+
+    expect(locator).toBeDisabled() failed
+
+    Locator:  getByTestId('appointment-form-submit-btn')
+    Expected: disabled
+    Received: enabled
+    Timeout:  5000ms
+
+    Call log:
+      - Form must not accept the booked slot getByTestId('appointment-form-submit-btn') with timeout 5000ms
+      - waiting for getByTestId('appointment-form-submit-btn')
+        14 × locator resolved to <button type="submit" data-testid="appointment-form-submit-btn" class="inline-flex items-center justify-center gap-2 rounded-md font-medium transition-colors disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 bg-blue-600 text-white hover:bg-blue-700 h-10 px-4 py-2 text-sm">Review & book</button>
+           - unexpected value "enabled"
+
+
+      85 |     await expect
+      86 |       .soft(page.getByTestId('appointment-form-submit-btn'), 'Form must not accept the booked slot')
+    > 87 |       .toBeDisabled();
+         |        ^
+      88 |
+      89 |     // And no booking request is created for the second patient.
+      90 |     expect(bookingRequests, 'No booking request may be sent for a booked slot').toHaveLength(0);
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/trainees-development-submi-f7393-slot-that-is-already-booked-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/trainees-development-submi-f7393-slot-that-is-already-booked-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/trainees-development-submi-f7393-slot-that-is-already-booked-chromium/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/trainees-development-submi-f7393-slot-that-is-already-booked-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/trainees-development-submi-f7393-slot-that-is-already-booked-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [chromium] › trainees/development/submissions/wednesday/adriana-chipana/tests/med101-01-book-open-slot.spec.ts:19:7 › SCEN-MED101-01 Book an open slot › patient books an open, in-hours slot and sees it confirmed 
+    [chromium] › trainees/development/submissions/wednesday/adriana-chipana/tests/med101-02-taken-slot-disabled.spec.ts:48:7 › SCEN-MED101-02 Booked slot is disabled for another patient › second patient cannot select a slot that is already booked 
+  2 passed (56.0s)

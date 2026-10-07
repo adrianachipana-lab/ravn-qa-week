@@ -1,0 +1,25 @@
+{
+ "captured": "2026-09-29T20:29:06.869Z",
+ "actor": "P1 (seeded)",
+ "appointment": "A01 — stored 2026-10-20 07:00, Dr. Michael Thompson",
+ "browserEngine": "Chromium (the only engine installed locally)",
+ "byTimezone": {
+  "Europe/London (UTC+1)": {
+   "dashboard": "Oct 20, 2026 at 07:00",
+   "list": "Oct 20, 2026 · 08:00 AM",
+   "detail": "Oct 20, 2026 · 08:00 AM"
+  },
+  "Asia/Tokyo (UTC+9)": {
+   "dashboard": "Oct 20, 2026 at 07:00",
+   "list": "Oct 20, 2026 · 04:00 PM",
+   "detail": "Oct 20, 2026 · 04:00 PM"
+  },
+  "America/Lima (UTC−5)": {
+   "dashboard": "Oct 20, 2026 at 07:00",
+   "list": "Oct 19, 2026 · 02:00 AM",
+   "detail": "Oct 19, 2026 · 02:00 AM"
+  }
+ },
+ "interpretation": "The dashboard shows the stored clinic time (07:00) in every zone. The list and the detail treat the stored 07:00 as UTC and convert it to the browser's zone (+1h London, +9h Tokyo, −5h Lima), and in Lima the date also moves back a day. Expected (mentor rule 1): the same clinic-local 07:00 on every screen, whatever the browser's zone.",
+ "screenshot": "run-13-tp06-detail-london.png"
+}

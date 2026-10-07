@@ -1,0 +1,17 @@
+{
+ "captured": "2026-10-02T14:36:08Z",
+ "environment": "https://medapp-nerdery.vercel.app (buggy mode ON)",
+ "browser": "Chromium (Playwright 1.63), macOS, browser zone America/La_Paz",
+ "account": "seeded test patient P2 (any patient account reproduces it)",
+ "steps": "Profile -> change Name to 'Maria Renamed' -> Save changes; open Dashboard and reload; log out and log back in",
+ "results": {
+  "toastAfterSave": "Profile updated",
+  "nameStoredInApi_GET_/api/profile": "Maria Renamed",
+  "navbarRightAfterSave": "QA Tue P2 2609291300 (old name)",
+  "dashboardAfterReload": {"navbar": "QA Tue P2 2609291300 (old)", "heading": "Welcome back, QA Tue P2 2609291300 (old)"},
+  "sessionNameAfterReload_GET_/api/auth/session": "QA Tue P2 2609291300 (old)",
+  "afterLogoutAndNewLogin": {"navbar": "Maria Renamed", "heading": "Welcome back, Maria Renamed", "sessionName": "Maria Renamed"}
+ },
+ "screenshots": ["bug-01-profile-saved-navbar-old-name.png", "bug-01-dashboard-after-reload-old-name.png", "bug-01-dashboard-after-new-login.png"],
+ "cleanup": "name restored to the original value (PUT /api/profile 200)"
+}

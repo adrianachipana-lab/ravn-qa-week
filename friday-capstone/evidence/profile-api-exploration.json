@@ -1,0 +1,21 @@
+{
+ "captured": "2026-10-02T14:30Z",
+ "account": "seeded test patient P3; every value restored at the end",
+ "PUT /api/profile": {
+  "name + phone valid": "200, both stored",
+  "displayName (field name used by the reference AC)": "200, ignored - name unchanged",
+  "name 1 character": "200, stored",
+  "name 51 characters": "200, stored",
+  "name 200 characters": "200, stored",
+  "name empty string": "200, ignored (previous name kept)",
+  "name '   ' through the UI": "stored as empty string, toast 'Profile updated'",
+  "phone 'INVALID_PHONE_123'": "200, stored",
+  "name with <script> tag": "200, stored as text; no script executed in the UI",
+  "avatarUrl to an invalid domain": "200, stored (avatar upload is disabled in the UI)",
+  "email change": "200, ignored - email unchanged",
+  "role: doctor": "200, ignored - role stays patient",
+  "no session": "401 {code: UNAUTHORIZED, message: ''}"
+ },
+ "GET /api/profile fields": ["_id", "name", "email", "phone", "avatarUrl", "role", "doctorId", "createdAt", "updatedAt", "__v"],
+ "UI /profile": {"inputs": ["profile-name-input (no maxlength, not required)", "profile-email-input (disabled, read-only)", "profile-phone-input (free text)", "profile-avatar-input (file, disabled: 'Avatar uploads not yet implemented')"], "saveButton": "profile-save-btn 'Save changes'", "toastOnSave": "Profile updated"}
+}
