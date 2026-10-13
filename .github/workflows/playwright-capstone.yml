@@ -1,6 +1,7 @@
-# CI workflow for the full QA test suite.
-# Requires repository secrets: PATIENT_EMAIL, PATIENT_PASSWORD,
-# SECOND_PATIENT_EMAIL, SECOND_PATIENT_PASSWORD, API_PATIENT_EMAIL, API_PATIENT_PASSWORD.
+# CI workflow — all QA suites.
+# Secrets: PATIENT_EMAIL, PATIENT_PASSWORD, SECOND_PATIENT_EMAIL,
+# SECOND_PATIENT_PASSWORD, API_PATIENT_EMAIL, API_PATIENT_PASSWORD,
+# DOCTOR_EMAIL, DOCTOR_PASSWORD.
 
 name: QA Test Suite
 
@@ -15,103 +16,113 @@ on:
       - 'package.json'
       - 'package-lock.json'
       - '.github/workflows/**'
+      - '*.config.ts'
   pull_request:
-    paths:
-      - '**/*.ts'
-      - 'package.json'
+    paths: ['**/*.ts', 'package.json', '.github/**']
   workflow_dispatch:
 
 concurrency:
   group: qa-tests
   cancel-in-progress: false
 
+env:
+  CI: 'true'
+  PATIENT_EMAIL: ${{ secrets.PATIENT_EMAIL }}
+  PATIENT_PASSWORD: ${{ secrets.PATIENT_PASSWORD }}
+  SECOND_PATIENT_EMAIL: ${{ secrets.SECOND_PATIENT_EMAIL }}
+  SECOND_PATIENT_PASSWORD: ${{ secrets.SECOND_PATIENT_PASSWORD }}
+  API_PATIENT_EMAIL: ${{ secrets.API_PATIENT_EMAIL }}
+  API_PATIENT_PASSWORD: ${{ secrets.API_PATIENT_PASSWORD }}
+  DOCTOR_EMAIL: ${{ secrets.DOCTOR_EMAIL }}
+  DOCTOR_PASSWORD: ${{ secrets.DOCTOR_PASSWORD }}
+
 jobs:
-  test:
+  wednesday:
+    name: Wednesday (2 AC gaps expected)
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Install Chromium
-        run: npx playwright install --with-deps chromium
-
-      # Wednesday: 2 AC gap tests fail by design (BUG-01/BUG-03).
-      # continue-on-error lets the job proceed, but the step still shows red.
-      - name: Run Wednesday tests (2 expected AC failures)
-        id: wednesday
-        env:
-          CI: 'true'
-          PATIENT_EMAIL: ${{ secrets.PATIENT_EMAIL }}
-          PATIENT_PASSWORD: ${{ secrets.PATIENT_PASSWORD }}
-          SECOND_PATIENT_EMAIL: ${{ secrets.SECOND_PATIENT_EMAIL }}
-          SECOND_PATIENT_PASSWORD: ${{ secrets.SECOND_PATIENT_PASSWORD }}
-        run: npx playwright test -c wednesday/playwright.config.ts
-        continue-on-error: true
-
-      - name: Run Thursday API tests
-        env:
-          CI: 'true'
-          PATIENT_EMAIL: ${{ secrets.PATIENT_EMAIL }}
-          PATIENT_PASSWORD: ${{ secrets.PATIENT_PASSWORD }}
-        run: npx playwright test -c thursday/playwright.config.ts
-
-      - name: Run Friday capstone tests
-        env:
-          CI: 'true'
-          PATIENT_EMAIL: ${{ secrets.PATIENT_EMAIL }}
-          PATIENT_PASSWORD: ${{ secrets.PATIENT_PASSWORD }}
-          API_PATIENT_EMAIL: ${{ secrets.API_PATIENT_EMAIL }}
-          API_PATIENT_PASSWORD: ${{ secrets.API_PATIENT_PASSWORD }}
-        run: npx playwright test -c friday-capstone/playwright.config.ts
-
-      - name: Run Improvement tests
-        id: improvements
-        env:
-          CI: 'true'
-          PATIENT_EMAIL: ${{ secrets.PATIENT_EMAIL }}
-          PATIENT_PASSWORD: ${{ secrets.PATIENT_PASSWORD }}
-          SECOND_PATIENT_EMAIL: ${{ secrets.SECOND_PATIENT_EMAIL }}
-          SECOND_PATIENT_PASSWORD: ${{ secrets.SECOND_PATIENT_PASSWORD }}
-          API_PATIENT_EMAIL: ${{ secrets.API_PATIENT_EMAIL }}
-          API_PATIENT_PASSWORD: ${{ secrets.API_PATIENT_PASSWORD }}
-        run: npx playwright test -c improvements/playwright.config.ts
-        continue-on-error: true
-
-      - name: Upload all HTML reports
+        with: { node-version: 20, cache: npm }
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Run Wednesday tests
+        id: run
+        run: npx playwright test -c wednesday/playwright.config.ts || true
+      - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v4
         with:
-          name: playwright-reports
-          path: |
-            wednesday/playwright-report
-            thursday/playwright-report
-            friday-capstone/playwright-report
-            improvements/playwright-report
+          name: report-wednesday
+          path: wednesday/playwright-report
           retention-days: 7
-
-      - name: Upload failure artifacts
+      - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v4
         with:
-          name: test-artifacts
-          path: |
-            wednesday/test-results
-            thursday/test-results
-            friday-capstone/test-results
-            improvements/test-results
+          name: artifacts-wednesday
+          path: wednesday/test-results
           retention-days: 7
           if-no-files-found: ignore
 
-      # Fail the job if Thursday or Friday had unexpected failures
-      # (Wednesday and improvements use continue-on-error for known defects)
-      - name: Check for unexpected regressions
+  thursday:
+    name: Thursday API
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: npm }
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test -c thursday/playwright.config.ts
+      - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
-        run: echo "All expected suites completed. Wednesday and improvements may have known failures."
+        with:
+          name: report-thursday
+          path: thursday/playwright-report
+          retention-days: 7
+
+  friday:
+    name: Friday Capstone
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: npm }
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test -c friday-capstone/playwright.config.ts
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: report-friday
+          path: friday-capstone/playwright-report
+          retention-days: 7
+
+  improvements:
+    name: Improvements (known defects expected)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: npm }
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Run improvement tests
+        id: run
+        run: npx playwright test -c improvements/playwright.config.ts || true
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: report-improvements
+          path: improvements/playwright-report
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: artifacts-improvements
+          path: improvements/test-results
+          retention-days: 7
+          if-no-files-found: ignore

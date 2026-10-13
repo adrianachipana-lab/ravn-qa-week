@@ -1,10 +1,10 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, request as playwrightRequest } from '@playwright/test';
 
-// Concurrency test: two patients attempt to book the same slot simultaneously.
-// Tests server-side handling — does the second request get rejected, or double-booking?
-// Same class of bug as backend audit FIX-02.
+// Concurrency test: two DIFFERENT patients attempt to book the same slot simultaneously.
+// Expected: exactly one 201 and one rejection (400/409). A 500 is not an acceptable rejection.
+// Observed on MediBook: both get 201 — double-booking (race condition).
 
-const DOCTOR_ID = '6aa85e2fb0083185ed54c88a'; // Dr. Michael Thompson
+const DOCTOR_ID = '6aa85e2fb0083185ed54c88a'; // Dr. Michael Thompson — not assigned to any trainee
 
 function envRequired(name: string): string {
   const v = process.env[name];
@@ -12,9 +12,8 @@ function envRequired(name: string): string {
   return v;
 }
 
-async function apiLoginContext(baseURL: string, email: string, password: string) {
-  const { request } = await import('@playwright/test');
-  const api = await request.newContext({ baseURL });
+async function apiLogin(baseURL: string, email: string, password: string) {
+  const api = await playwrightRequest.newContext({ baseURL });
   const { csrfToken } = await (await api.get('/api/auth/csrf')).json();
   await api.post('/api/auth/callback/credentials', {
     form: { csrfToken, email, password, json: 'true' },
@@ -32,25 +31,33 @@ function futureWorkingDay(): string {
 }
 
 test.describe('Concurrent booking — same slot, two patients', () => {
-  test('only one booking should succeed when two patients book the same slot simultaneously', async ({ baseURL }) => {
-    const secondEmail = process.env.SECOND_PATIENT_EMAIL;
-    if (!secondEmail) {
-      test.skip(true, 'SECOND_PATIENT_EMAIL not set');
-      return;
-    }
+  test('exactly one booking succeeds when two patients book the same slot simultaneously', async ({ baseURL }) => {
+    const p1Email = envRequired('PATIENT_EMAIL');
+    const p2Email = process.env.SECOND_PATIENT_EMAIL;
+    if (!p2Email) { test.skip(true, 'SECOND_PATIENT_EMAIL not set'); return; }
+    expect(p1Email, 'The two patient accounts must be different').not.toBe(p2Email);
 
-    const password = envRequired('PATIENT_PASSWORD');
-    const patient1Email = envRequired('PATIENT_EMAIL');
-    const patient1 = await apiLoginContext(baseURL!, patient1Email, password);
-    const patient2 = await apiLoginContext(baseURL!, secondEmail, process.env.SECOND_PATIENT_PASSWORD ?? password);
+    const p1Password = envRequired('PATIENT_PASSWORD');
+    const p2Password = process.env.SECOND_PATIENT_PASSWORD ?? p1Password;
+    const patient1 = await apiLogin(baseURL!, p1Email, p1Password);
+    const patient2 = await apiLogin(baseURL!, p2Email, p2Password);
 
     const date = futureWorkingDay();
     const timeSlot = '12:30';
+
+    // Verify the slot is available before the test
+    const slotsCheck = await patient1.get(`/api/doctors/${DOCTOR_ID}/slots?date=${date}`);
+    if (slotsCheck.ok()) {
+      test.info().annotations.push({
+        type: 'pre-check',
+        description: `Slots for ${date}: ${(await slotsCheck.json()).data?.length ?? '?'} available`,
+      });
+    }
+
     const createdByP1: string[] = [];
     const createdByP2: string[] = [];
 
     try {
-      // Fire both requests concurrently
       const [res1, res2] = await Promise.all([
         patient1.post('/api/appointments', {
           data: { doctorId: DOCTOR_ID, date, timeSlot, reason: `QA concurrent P1 ${Date.now()}` },
@@ -62,71 +69,61 @@ test.describe('Concurrent booking — same slot, two patients', () => {
 
       const body1 = await res1.json();
       const body2 = await res2.json();
-
       if (res1.status() === 201 && body1.data?.id) createdByP1.push(body1.data.id);
       if (res2.status() === 201 && body2.data?.id) createdByP2.push(body2.data.id);
 
-      const statuses = [res1.status(), res2.status()];
-      const successCount = statuses.filter((s) => s === 201).length;
+      const s1 = res1.status();
+      const s2 = res2.status();
+      const successes = [s1, s2].filter((s) => s === 201).length;
 
       test.info().annotations.push({
-        type: 'result',
-        description: `Patient1: ${res1.status()}, Patient2: ${res2.status()}. Slot: ${date} ${timeSlot}. IDs created: P1=${createdByP1.join(',') || 'none'}, P2=${createdByP2.join(',') || 'none'}`,
+        type: 'observed',
+        description: `P1: ${s1}, P2: ${s2}. Slot: ${date} ${timeSlot}. Created: P1=${createdByP1[0] ?? 'none'}, P2=${createdByP2[0] ?? 'none'}`,
       });
 
-      if (successCount === 2) {
-        // DEFECT: double-booking. Verify via GET that both actually persisted.
-        const verify1 = createdByP1[0] ? await patient1.get(`/api/appointments/${createdByP1[0]}`) : null;
-        const verify2 = createdByP2[0] ? await patient2.get(`/api/appointments/${createdByP2[0]}`) : null;
+      if (successes === 2) {
+        // Verify both persisted with correct data
+        const v1 = await patient1.get(`/api/appointments/${createdByP1[0]}`);
+        const v2 = await patient2.get(`/api/appointments/${createdByP2[0]}`);
+        const d1 = v1.ok() ? (await v1.json()).data : null;
+        const d2 = v2.ok() ? (await v2.json()).data : null;
 
-        const persisted1 = verify1?.ok() ? (await verify1.json()).data : null;
-        const persisted2 = verify2?.ok() ? (await verify2.json()).data : null;
+        expect(createdByP1[0], 'IDs must be different').not.toBe(createdByP2[0]);
 
         test.info().annotations.push({
           type: 'defect',
           description: [
-            `DOUBLE-BOOKING CONFIRMED via persistence check:`,
-            `P1 appointment ${createdByP1[0]}: status=${persisted1?.status}, date=${persisted1?.date}, slot=${persisted1?.timeSlot}`,
-            `P2 appointment ${createdByP2[0]}: status=${persisted2?.status}, date=${persisted2?.date}, slot=${persisted2?.timeSlot}`,
-            `Observed behavior: server accepted both concurrent POST requests returning 201.`,
-            `Expected behavior: exactly one 201, the other should receive 409 Conflict or 400.`,
-            `Note: this documents the observed behavior. The root cause (missing transaction/lock) is a hypothesis, not confirmed from these tests alone.`,
+            `DOUBLE-BOOKING: both requests returned 201 and both appointments persist.`,
+            `P1 (${createdByP1[0]}): status=${d1?.status}, doctor=${d1?.doctorId}, date=${d1?.date}, slot=${d1?.timeSlot}`,
+            `P2 (${createdByP2[0]}): status=${d2?.status}, doctor=${d2?.doctorId}, date=${d2?.date}, slot=${d2?.timeSlot}`,
+            `Expected: one 201 + one 400/409. Observed: two 201.`,
           ].join('\n'),
         });
 
-        expect(successCount, 'Only one concurrent booking should succeed — double-booking is a defect').toBe(1);
+        expect(successes, 'Only one concurrent booking should succeed').toBe(1);
 
-      } else if (successCount === 1) {
-        // Correct: one accepted, one rejected
-        const failStatus = statuses.find((s) => s !== 201);
-        test.info().annotations.push({
-          type: 'pass',
-          description: `Concurrency handled correctly: one 201, one ${failStatus}`,
-        });
+      } else if (successes === 1) {
+        const failStatus = s1 !== 201 ? s1 : s2;
+        // A 500 is not an acceptable rejection
+        expect(failStatus, 'Rejection should be 400 or 409, not 500').toBeLessThan(500);
+        test.info().annotations.push({ type: 'pass', description: `Correct: one 201, one ${failStatus}` });
 
       } else {
-        // Both failed — this is also a defect (one should succeed for a free slot)
+        // Both failed — at least one should succeed for a free slot
         test.info().annotations.push({
           type: 'defect',
-          description: `Both requests failed: ${res1.status()} and ${res2.status()}. At least one should succeed for a free slot.`,
+          description: `Both failed: ${s1} and ${s2}. At least one should succeed for a free slot.`,
         });
-        expect(successCount, 'At least one booking should succeed for a free slot').toBeGreaterThanOrEqual(1);
+        expect(successes, 'At least one booking should succeed for a free slot').toBeGreaterThanOrEqual(1);
       }
     } finally {
-      // Cleanup: each owner deletes their own appointments
       for (const id of createdByP1) {
-        const del = await patient1.delete(`/api/appointments/${id}`);
-        test.info().annotations.push({
-          type: 'cleanup',
-          description: `P1 delete ${id}: ${del.status()}`,
-        });
+        const d = await patient1.delete(`/api/appointments/${id}`);
+        test.info().annotations.push({ type: 'cleanup', description: `P1 delete ${id}: ${d.status()}` });
       }
       for (const id of createdByP2) {
-        const del = await patient2.delete(`/api/appointments/${id}`);
-        test.info().annotations.push({
-          type: 'cleanup',
-          description: `P2 delete ${id}: ${del.status()}`,
-        });
+        const d = await patient2.delete(`/api/appointments/${id}`);
+        test.info().annotations.push({ type: 'cleanup', description: `P2 delete ${id}: ${d.status()}` });
       }
       await patient1.dispose();
       await patient2.dispose();
