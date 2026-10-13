@@ -17,7 +17,10 @@
     "install:browsers": "npx playwright install --with-deps chromium"
   },
   "dependencies": {
-    "@playwright/test": "^1.63.0",
-    "@axe-core/playwright": "^4.10.0"
+    "@axe-core/playwright": "^4.10.0",
+    "@playwright/test": "^1.63.0"
+  },
+  "devDependencies": {
+    "dotenv": "^18.0.7"
   }
 }
