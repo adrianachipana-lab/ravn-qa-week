@@ -2,8 +2,7 @@ import 'dotenv/config';
 import path from 'node:path';
 import { defineConfig, devices } from '@playwright/test';
 
-// Improvements suite — additional tests beyond the original QA week deliverables.
-// These are OUR improvements, not attributed to Paulo's feedback.
+const authDir = path.join(__dirname, '..', 'auth');
 
 export default defineConfig({
   testDir: __dirname,
@@ -27,24 +26,37 @@ export default defineConfig({
   },
 
   projects: [
+    // Auth setup — creates storageState files for reuse
+    {
+      name: 'auth-setup',
+      testDir: path.join(__dirname, '..', 'shared'),
+      testMatch: ['auth.setup.ts'],
+    },
     {
       name: 'accessibility',
       testMatch: ['accessibility.spec.ts'],
-      use: { ...devices['Desktop Chrome'] },
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: path.join(authDir, 'patient.storageState.json'),
+      },
+      dependencies: ['auth-setup'],
     },
     {
       name: 'concurrency',
       testMatch: ['concurrency.spec.ts'],
+      // Concurrency test manages its own sessions (two different patients)
     },
     {
       name: 'performance',
       testMatch: ['performance.spec.ts'],
       use: { ...devices['Desktop Chrome'] },
+      // Performance test manages its own auth to measure login time
     },
     {
       name: 'completed-appointment',
       testMatch: ['completed-appointment.spec.ts'],
       use: { ...devices['Desktop Chrome'] },
+      // Manages its own login for the UI verification step
     },
   ],
 });
