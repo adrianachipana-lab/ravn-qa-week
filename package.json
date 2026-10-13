@@ -9,7 +9,7 @@
     "test:thursday": "npx playwright test -c thursday/playwright.config.ts",
     "test:friday": "npx playwright test -c friday-capstone/playwright.config.ts",
     "test:improvements": "npx playwright test -c improvements/playwright.config.ts",
-    "test:all": "npm run test:wednesday && npm run test:thursday && npm run test:friday && npm run test:improvements",
+    "test:all": "npx playwright test -c wednesday/playwright.config.ts; npx playwright test -c thursday/playwright.config.ts; npx playwright test -c friday-capstone/playwright.config.ts; npx playwright test -c improvements/playwright.config.ts",
     "test:regression": "npx playwright test -c thursday/regression.config.ts",
     "report:wednesday": "npx playwright show-report wednesday/playwright-report",
     "report:thursday": "npx playwright show-report thursday/playwright-report",

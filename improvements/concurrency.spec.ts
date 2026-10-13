@@ -1,10 +1,8 @@
 import { test, expect } from '@playwright/test';
 
 // Concurrency test: two patients attempt to book the same slot simultaneously.
-// This tests the server-side handling of concurrent bookings — does the second
-// request get properly rejected, or do we end up with a double-booking?
-//
-// This is the same class of bug found in the backend audit (FIX-02 race condition).
+// Tests server-side handling — does the second request get rejected, or double-booking?
+// Same class of bug as backend audit FIX-02.
 
 const DOCTOR_ID = '6aa85e2fb0083185ed54c88a'; // Dr. Michael Thompson
 
@@ -28,27 +26,28 @@ async function apiLoginContext(baseURL: string, email: string, password: string)
 
 function futureWorkingDay(): string {
   const day = new Date();
-  // Pick a date far enough in the future to avoid conflicts with other tests
   day.setDate(day.getDate() + 42 + Math.floor(Math.random() * 14));
   while (![1, 2, 3, 4, 5].includes(day.getDay())) day.setDate(day.getDate() + 1);
   return `${day.getFullYear()}-${String(day.getMonth() + 1).padStart(2, '0')}-${String(day.getDate()).padStart(2, '0')}`;
 }
 
 test.describe('Concurrent booking — same slot, two patients', () => {
-  test('only one booking succeeds when two patients book the same slot simultaneously', async ({ baseURL }) => {
+  test('only one booking should succeed when two patients book the same slot simultaneously', async ({ baseURL }) => {
     const secondEmail = process.env.SECOND_PATIENT_EMAIL;
     if (!secondEmail) {
-      test.skip();
+      test.skip(true, 'SECOND_PATIENT_EMAIL not set');
       return;
     }
 
     const password = envRequired('PATIENT_PASSWORD');
-    const patient1 = await apiLoginContext(baseURL!, envRequired('PATIENT_EMAIL'), password);
+    const patient1Email = envRequired('PATIENT_EMAIL');
+    const patient1 = await apiLoginContext(baseURL!, patient1Email, password);
     const patient2 = await apiLoginContext(baseURL!, secondEmail, process.env.SECOND_PATIENT_PASSWORD ?? password);
 
     const date = futureWorkingDay();
-    const timeSlot = '11:00'; // fixed slot for this test
-    const createdIds: string[] = [];
+    const timeSlot = '12:30';
+    const createdByP1: string[] = [];
+    const createdByP2: string[] = [];
 
     try {
       // Fire both requests concurrently
@@ -64,52 +63,70 @@ test.describe('Concurrent booking — same slot, two patients', () => {
       const body1 = await res1.json();
       const body2 = await res2.json();
 
-      // Track created appointments for cleanup
-      if (res1.status() === 201 && body1.data?.id) createdIds.push(body1.data.id);
-      if (res2.status() === 201 && body2.data?.id) createdIds.push(body2.data.id);
+      if (res1.status() === 201 && body1.data?.id) createdByP1.push(body1.data.id);
+      if (res2.status() === 201 && body2.data?.id) createdByP2.push(body2.data.id);
 
-      // Exactly one should succeed (201) and one should fail (409 or 400)
-      const statuses = [res1.status(), res2.status()].sort();
+      const statuses = [res1.status(), res2.status()];
       const successCount = statuses.filter((s) => s === 201).length;
 
+      test.info().annotations.push({
+        type: 'result',
+        description: `Patient1: ${res1.status()}, Patient2: ${res2.status()}. Slot: ${date} ${timeSlot}. IDs created: P1=${createdByP1.join(',') || 'none'}, P2=${createdByP2.join(',') || 'none'}`,
+      });
+
       if (successCount === 2) {
-        // DEFECT: double-booking occurred — both patients got the same slot
+        // DEFECT: double-booking. Verify via GET that both actually persisted.
+        const verify1 = createdByP1[0] ? await patient1.get(`/api/appointments/${createdByP1[0]}`) : null;
+        const verify2 = createdByP2[0] ? await patient2.get(`/api/appointments/${createdByP2[0]}`) : null;
+
+        const persisted1 = verify1?.ok() ? (await verify1.json()).data : null;
+        const persisted2 = verify2?.ok() ? (await verify2.json()).data : null;
+
         test.info().annotations.push({
           type: 'defect',
-          description: `DOUBLE-BOOKING: Both patients booked ${date} ${timeSlot}. IDs: ${createdIds.join(', ')}. This is a race condition — the server does not serialize concurrent bookings.`,
+          description: [
+            `DOUBLE-BOOKING CONFIRMED via persistence check:`,
+            `P1 appointment ${createdByP1[0]}: status=${persisted1?.status}, date=${persisted1?.date}, slot=${persisted1?.timeSlot}`,
+            `P2 appointment ${createdByP2[0]}: status=${persisted2?.status}, date=${persisted2?.date}, slot=${persisted2?.timeSlot}`,
+            `Observed behavior: server accepted both concurrent POST requests returning 201.`,
+            `Expected behavior: exactly one 201, the other should receive 409 Conflict or 400.`,
+            `Note: this documents the observed behavior. The root cause (missing transaction/lock) is a hypothesis, not confirmed from these tests alone.`,
+          ].join('\n'),
         });
 
-        // Verify the double-booking by querying the slot
-        const slotsRes = await patient1.get(`/api/doctors/${DOCTOR_ID}/slots?date=${date}`);
-        if (slotsRes.ok()) {
-          const slotsBody = await slotsRes.json();
-          test.info().annotations.push({
-            type: 'evidence',
-            description: `Slot ${timeSlot} available=${JSON.stringify(slotsBody)}`,
-          });
-        }
+        expect(successCount, 'Only one concurrent booking should succeed — double-booking is a defect').toBe(1);
 
-        // This is a real defect — fail the test
-        expect(successCount, 'Only one concurrent booking should succeed').toBe(1);
       } else if (successCount === 1) {
-        // Expected: one success, one rejection
+        // Correct: one accepted, one rejected
         const failStatus = statuses.find((s) => s !== 201);
         test.info().annotations.push({
           type: 'pass',
           description: `Concurrency handled correctly: one 201, one ${failStatus}`,
         });
-        expect(successCount).toBe(1);
+
       } else {
-        // Both failed — unexpected
+        // Both failed — this is also a defect (one should succeed for a free slot)
         test.info().annotations.push({
-          type: 'finding',
-          description: `Both requests failed: ${res1.status()} and ${res2.status()}`,
+          type: 'defect',
+          description: `Both requests failed: ${res1.status()} and ${res2.status()}. At least one should succeed for a free slot.`,
         });
+        expect(successCount, 'At least one booking should succeed for a free slot').toBeGreaterThanOrEqual(1);
       }
     } finally {
-      // Cleanup all created appointments
-      for (const id of createdIds) {
-        await patient1.delete(`/api/appointments/${id}`).catch(() => {});
+      // Cleanup: each owner deletes their own appointments
+      for (const id of createdByP1) {
+        const del = await patient1.delete(`/api/appointments/${id}`);
+        test.info().annotations.push({
+          type: 'cleanup',
+          description: `P1 delete ${id}: ${del.status()}`,
+        });
+      }
+      for (const id of createdByP2) {
+        const del = await patient2.delete(`/api/appointments/${id}`);
+        test.info().annotations.push({
+          type: 'cleanup',
+          description: `P2 delete ${id}: ${del.status()}`,
+        });
       }
       await patient1.dispose();
       await patient2.dispose();
