@@ -1,0 +1,81 @@
+# CI workflow for the full QA test suite.
+# Requires repository secrets: PATIENT_EMAIL, PATIENT_PASSWORD,
+# SECOND_PATIENT_EMAIL, API_PATIENT_EMAIL.
+
+name: QA Test Suite
+
+on:
+  pull_request:
+    paths:
+      - 'wednesday/**'
+      - 'thursday/**'
+      - 'friday-capstone/**'
+  workflow_dispatch:
+
+concurrency:
+  group: qa-tests
+  cancel-in-progress: false
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Wednesday tests
+        env:
+          CI: 'true'
+          PATIENT_EMAIL: ${{ secrets.PATIENT_EMAIL }}
+          PATIENT_PASSWORD: ${{ secrets.PATIENT_PASSWORD }}
+          SECOND_PATIENT_EMAIL: ${{ secrets.SECOND_PATIENT_EMAIL }}
+        run: npx playwright test -c wednesday/playwright.config.ts
+        continue-on-error: true
+
+      - name: Run Thursday API tests
+        env:
+          CI: 'true'
+          PATIENT_EMAIL: ${{ secrets.PATIENT_EMAIL }}
+          PATIENT_PASSWORD: ${{ secrets.PATIENT_PASSWORD }}
+        run: npx playwright test -c thursday/playwright.config.ts
+
+      - name: Run Friday capstone tests
+        env:
+          CI: 'true'
+          PATIENT_EMAIL: ${{ secrets.PATIENT_EMAIL }}
+          PATIENT_PASSWORD: ${{ secrets.PATIENT_PASSWORD }}
+          API_PATIENT_EMAIL: ${{ secrets.API_PATIENT_EMAIL }}
+        run: npx playwright test -c friday-capstone/playwright.config.ts
+
+      - name: Upload HTML reports
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-reports
+          path: |
+            wednesday/playwright-report
+            thursday/playwright-report
+            friday-capstone/playwright-report
+          retention-days: 7
+
+      - name: Upload failure artifacts
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: failure-artifacts
+          path: |
+            wednesday/test-results
+            thursday/test-results
+            friday-capstone/test-results
+          retention-days: 7

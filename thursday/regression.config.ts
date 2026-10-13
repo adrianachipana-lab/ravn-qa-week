@@ -15,12 +15,12 @@ import { defineConfig, devices } from '@playwright/test';
 // The suite is not expected to be green: the seeded defects stay on (facilitator update,
 // trainees/development/submissions/README.md).
 
-const submissions = path.resolve(__dirname, '../..');
-const wednesday = 'wednesday/adriana-chipana/tests';
-const thursday = 'thursday/adriana-chipana/api-tests';
+const repoRoot = path.resolve(__dirname, '..');
+const wednesday = 'wednesday/tests';
+const thursday = 'thursday/api-tests';
 
 export default defineConfig({
-  testDir: submissions,
+  testDir: repoRoot,
   outputDir: path.join(__dirname, 'test-results'),
 
   timeout: 90_000,

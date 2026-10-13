@@ -1,0 +1,23 @@
+{
+  "name": "ravn-qa-week",
+  "version": "1.0.0",
+  "private": true,
+  "description": "QA week deliverables — MediBook (medapp-nerdery.vercel.app)",
+  "type": "commonjs",
+  "scripts": {
+    "test:wednesday": "npx playwright test -c wednesday/playwright.config.ts",
+    "test:thursday": "npx playwright test -c thursday/playwright.config.ts",
+    "test:friday": "npx playwright test -c friday-capstone/playwright.config.ts",
+    "test:improvements": "npx playwright test -c improvements/playwright.config.ts",
+    "test:all": "npm run test:wednesday && npm run test:thursday && npm run test:friday && npm run test:improvements",
+    "test:regression": "npx playwright test -c thursday/regression.config.ts",
+    "report:wednesday": "npx playwright show-report wednesday/playwright-report",
+    "report:thursday": "npx playwright show-report thursday/playwright-report",
+    "report:friday": "npx playwright show-report friday-capstone/playwright-report",
+    "install:browsers": "npx playwright install --with-deps chromium"
+  },
+  "dependencies": {
+    "@playwright/test": "^1.63.0",
+    "@axe-core/playwright": "^4.10.0"
+  }
+}

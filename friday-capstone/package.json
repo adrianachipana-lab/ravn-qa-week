@@ -1,0 +1,19 @@
+{
+  "name": "friday-capstone",
+  "version": "1.0.0",
+  "description": "**Feature:** MEDIC-108 — patient profile management (`/profile` and `PUT /api/profile`).\r - **Reference artifacts:** Product's Gherkin AC and business rules for MEDIC-108 (`trainees/product/belen/friday/gherkin-ac-and-scenarios.md`, `business-rules-catalogue-medic108.md`).\r - **No state map:** there is no Design state map for this feature. As the mentor proposed (2026-10-02), the screen's real `data-testid` hooks were audited instead — see \"Hooks audit\" below.",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@playwright/test": "^1.63.0"
+  }
+}
